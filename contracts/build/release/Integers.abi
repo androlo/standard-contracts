@@ -1,0 +1,1 @@
+[{"constant":true,"inputs":[{"name":"a","type":"uint256"},{"name":"p","type":"uint256"}],"name":"invmod","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"b","type":"uint256"},{"name":"e","type":"uint256"},{"name":"m","type":"uint256"}],"name":"expmod","outputs":[{"name":"r","type":"uint256"}],"type":"function"}]

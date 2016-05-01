@@ -1,0 +1,18 @@
+{
+  "name": "solidity-stl",
+  "version": "0.1.0",
+  "description": "0.1.0",
+  "author": "Andreas Olofsson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/androlo/standard-contracts.git"
+  },
+  "devDependencies": {
+    "async": "^2.0.0-rc.3",
+    "web3": "^0.15.3",
+    "bignumber.js": "^2.3.0",
+    "fs-extra": "^0.30.0",
+    "rlp": "^2.0.0"
+  }
+}

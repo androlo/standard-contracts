@@ -1,0 +1,17 @@
+{
+  "module": "math",
+  "units": [
+    ["math/Integers"]
+  ],
+  "tests": [
+    "ByteSliceTest"
+  ],
+  "compilerOptions": {
+    "bin": true,
+    "abi": true,
+    "optimize": true
+  },
+  "includes": {
+    "github.com/androlo/standard-contracts/contracts/" : "./"
+  }
+}
