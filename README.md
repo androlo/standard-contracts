@@ -89,13 +89,13 @@ Functions for copying slices.
 
 The no-argument version will simply copy the slice, i.e. `slice[:]`.
 
-Providing a starting position will copy the slice starting from that index instead of 0, i.e. `slice[s:]`.
+A starting position can be provided, i.e. `slice[s:]`.
 
-Providing a starting position and length will copy the slice starting from that index, and store the given length, i.e. `slice[s:t]`.
+A a starting position and an end position can be provided, i.e. `slice[s:t]`.
 
 (There is no equivalence to `slice[:t]`, so `slice[0:t]` must be used)
 
-Indices may be negative, i.e `slice[-1]`, `slice[-3:-2]`.
+Indices can be negative, i.e `slice[-1]`, `slice[-3:-2]`.
 
 Optimized versions for unsigned integers are available.
 
