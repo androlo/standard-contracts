@@ -204,6 +204,7 @@ Internal tests are done for contracts that are meant to be inherited, or called 
 
 The first method works if the contract's input and output is on a format that can be used in RPC calls. The second method is used when that is not the case.
 
+```
 contract C {
     struct S {
         uint a;
@@ -249,6 +250,7 @@ contract AnotherTestC is C {
     }
 
 }
+```
 
 These tests are temporary solutions until a standard method for tests has been decided on. Solidity is [working on this](https://github.com/ethereum/solidity/issues/516).
 
