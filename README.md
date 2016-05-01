@@ -83,7 +83,7 @@ function f() {
 }
 ```
 
-#### toSlice
+#### newSlice
 
 Functions for copying slices.
 
