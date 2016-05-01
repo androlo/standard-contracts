@@ -138,7 +138,7 @@ function f() {
     bytes memory bts = "abcdefg";
     var s = fromBytes(bts);
     var bts2 = toBytes(s); // Identical to 'bts'
-    var bts3 = toBytes(newSlice(s, 4)) // "efg"
+    return toBytes(newSlice(s, uint(4))); // "efg"
 }
 ```
 
@@ -150,7 +150,7 @@ Contracts used for doing math.
 
 ### Integers
 
-Functions that has to do with integers.
+Functions that has to do with integers. Naming is trying to be consistent with similar solidity functions, e.g. 'invmod' and 'expmod' is like 'addmod', 'mulmod', etc.
 
 #### invmod
 
