@@ -234,7 +234,7 @@ contract TestC is C {
 
 contract AnotherTestC is C {
 
-    // Return a part of S that we need for this test.
+    // Return a boolean that is true only if all "assertions" are true.
     function h(uint a) returns (bool ret) {
         var s = S(a);
         g(s);
