@@ -78,8 +78,8 @@ function f() {
     bytes memory bts = new bytes(56);
     bts[5] = 2;
     var s = fromBytes(bts);
-    var b = at(s, 5); // 2
-    var willThrow = at(s, 56);
+    var b = at(s, uint(5)); // 2
+    var willThrow = at(s, uint(56));
 }
 ```
 
@@ -110,20 +110,20 @@ function f() {
 
     var sCopy = newSlice(s); // Identical
 
-    var s2 = newSlice(s, 5); // slice on "fg"
+    var s2 = newSlice(s, uint(5)); // slice on "fg"
 
-    var s3 = newSlice(s, 5, 6); // slice on "f"
+    var s3 = newSlice(s, uint(5), 6); // slice on "f"
 
-    var s4 = newSlice(-2); // slice on "fg"
+    var s4 = newSlice(s, -2); // slice on "fg"
 
-    var s5 = newSlice(-4, -1) // slice on "def"
-    var s6 = newSlice(s5, 1, 2); // slice on "e"
+    var s5 = newSlice(s, -4, -1); // slice on "def"
+    var s6 = newSlice(s5, uint(1), 2); // slice on "e"
 
-    var s7 = newSlice(s, 7, 7); // The empty slice.
+    var s7 = newSlice(s, uint(7), 7); // The empty slice.
 
-    var willThrow = copy(s, 9);
+    var willThrow = newSlice(s, uint(9));
 
-    var willThrowToo = copy(s, 0, 8);
+    var willThrowToo = newSlice(s, uint(0), 8);
 }
 ```
 
