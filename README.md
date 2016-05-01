@@ -34,7 +34,7 @@ The `Slice` struct has two members of type `uint`:
 
 Extracting the bytes out of a slice is done using the `toBytes` function, which creates a new `bytes memory` variable, sets its size to `len`, and copies all the bytes from memory address `memPtr` to `memPtr + len` to the new variable.
 
-While the memory pointer in an empty slice is deleted (i.e. set to 0), the value stored at memory address 0 may not be 0. This doesn't matter during normal usage, because the empty slice can only be sliced into the empty slice, and the `bytes memory` produced when running `toBytes(emptySlice)` is always the same (i.e. `new bytes(0)`). There is also no way to de-allocate memory in Solidity. Just avoid messing with the pointer directly, and don't expect `_unsafe_memPtr` to point to 0 - even when pointer and length are both set to 0.
+While the memory pointer in an empty slice is deleted (i.e. set to 0), the value stored at memory address 0 may not be 0. This doesn't matter during normal usage, because the empty slice can only be sliced into the empty slice, and the `bytes memory` produced when running `toBytes(emptySlice)` is always the same (i.e. `new bytes(0)`). There is also no way to de-allocate memory in Solidity. Just avoid messing with the pointer directly, and if you do, don't expect the value `_unsafe_memPtr` points to to be 0 - even when it (and perhaps also length) is 0.
 
 #### fromBytes
 
