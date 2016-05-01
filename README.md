@@ -97,9 +97,9 @@ Providing a starting position and length will copy the slice starting from that 
 
 Indices may be negative, i.e `slice[-1]`, `slice[-3:-2]`.
 
-Optimized versions for unsigned integers are available for both one and two indices.
+Optimized versions for unsigned integers are available.
 
-If either start or end index is out of bounds (given the input slice), the functions will throw.
+If either the start or the end positions is out of bounds, the functions will throw.
 
 ##### examples
 
