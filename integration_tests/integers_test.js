@@ -60,7 +60,7 @@ describe('Math', function () {
         util.initWeb3(function (err) {
             if (err)
                 return done(err);
-            util.deploy("Integers", path.join(__dirname, "../contracts/build/release"), function (err, contract) {
+            util.deploy("Integers", path.join(__dirname, "../contracts/build/release"), null, function (err, contract) {
                 if (err)
                     return done(err);
                 integers = contract;
@@ -112,8 +112,9 @@ describe('Math', function () {
 
             it('should throw for bad input', function (done) {
                 async.eachSeries(numsToInvBad, function (numPair, cb) {
-                        integers.invmod(numPair[0], numPair[1], function (err) {
-                            assert.ifError(!err);
+                        integers.invmod(numPair[0], numPair[1], function (err, result) {                assert.ifError(err);
+                            assert.ifError(err);
+                            assert(result.eq(0));
                             cb();
                         })
                     }, function () {
@@ -155,8 +156,9 @@ describe('Math', function () {
             });
 
             it('should throw for bad input', function (done) {
-                integers.expmod(24, 22, 0, function (err) {
-                    assert.ifError(!err);
+                integers.expmod(24, 22, 0, function (err, result) {
+                    assert.ifError(err);
+                    assert(result.eq(0));
                     done();
                 });
             });
@@ -165,26 +167,4 @@ describe('Math', function () {
 
     });
 
-
-/*
-    it('should calculate the correct values using modular exponentiation', function (done) {
-        async.eachSeries(numsToExp, function (numTrip, cb) {
-                numbers.expmod(numTrip[0], numTrip[1], numTrip[2], {from: sender}, function (err, result) {
-                    console.log("Base: " + new BigNumber(numTrip[0]).toString(10));
-                    console.log("Exponent: " + new BigNumber(numTrip[1]).toString(10));
-                    console.log("Modulus: " + new BigNumber(numTrip[2]).toString(10));
-                    if (err)
-                        console.log("Value: error");
-                    else
-                        console.log("Value: " + result.toString(10));
-                    console.log("");
-                    cb();
-                })
-            }, function () {
-                console.log("Done");
-                process.exit(0);
-            }
-        );
-    });
-  */
 });

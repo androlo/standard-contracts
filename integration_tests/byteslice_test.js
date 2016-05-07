@@ -7,12 +7,13 @@ var byteslicetest;
 describe('Bytes', function () {
 
     describe('ByteSlice', function () {
+        
         before(function (done) {
             this.timeout(300000); // 5 minutes.
             util.initWeb3(function (err) {
                 if (err)
                     return done(err);
-                util.deploy("ByteSliceTest", path.join(__dirname, "../contracts/build/test"), function (err, contract) {
+                util.deploy("ByteSliceTest", path.join(__dirname, "../contracts/build/test"), null, function (err, contract) {
                     if (err)
                         return done(err);
                     byteslicetest = contract;
@@ -22,7 +23,15 @@ describe('Bytes', function () {
         });
 
         it('should create a slice from bytes', function (done) {
-            byteslicetest.testCreate(function (err, result) {
+            byteslicetest.testCreateFromBytes(function (err, result) {
+                assert.ifError(err);
+                assert(result);
+                done();
+            })
+        });
+
+        it('should create a slice from an ASCII string', function (done) {
+            byteslicetest.testCreateFromAscii(function (err, result) {
                 assert.ifError(err);
                 assert(result);
                 done();
@@ -54,8 +63,9 @@ describe('Bytes', function () {
         });
 
         it('should fail to get a byte from a slice because the index is too high.', function (done) {
-            byteslicetest.testAtFailIndexOutOfBounds(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testAtFailIndexOutOfBounds(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
@@ -69,14 +79,55 @@ describe('Bytes', function () {
         });
 
         it('should fail to get a byte from a slice because the signed index is too low.', function (done) {
-            byteslicetest.testAtSignedFailIndexOutOfBounds(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testAtSignedFailIndexOutOfBounds(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
 
-        it('should get the byte array from a slice.', function (done) {
+        it('should set a byte in a slice.', function (done) {
+            byteslicetest.testSet(function (err, result) {
+                assert.ifError(err);
+                assert(result);
+                done();
+            })
+        });
+
+        it('should fail to set a byte in a slice because the index is too high.', function (done) {
+            byteslicetest.testSetFailIndexOutOfBounds(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
+                done();
+            })
+        });
+
+        it('should set a byte in a slice using a signed index.', function (done) {
+            byteslicetest.testSetSigned(function (err, result) {
+                assert.ifError(err);
+                assert(result);
+                done();
+            })
+        });
+
+        it('should fail to set a byte in a slice because the signed index is too low.', function (done) {
+            byteslicetest.testSetSignedFailIndexOutOfBounds(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
+                done();
+            })
+        });
+
+        it('should get the bytes from a slice.', function (done) {
             byteslicetest.testToBytes(function (err, result) {
+                assert.ifError(err);
+                assert(result);
+                done();
+            })
+        });
+
+        it('should get the ASCII string from a slice.', function (done) {
+            byteslicetest.testToAscii(function (err, result) {
                 assert.ifError(err);
                 assert(result);
                 done();
@@ -108,8 +159,9 @@ describe('Bytes', function () {
         });
 
         it('should fail to create a new slice from a too high start-position', function (done) {
-            byteslicetest.testNewSliceFromStartposFailSOOB(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testNewSliceFromStartposFailSOOB(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
@@ -123,8 +175,9 @@ describe('Bytes', function () {
         });
 
         it('should fail to create a new slice from a too low signed start-position', function (done) {
-            byteslicetest.testNewSliceFromSignedStartposFailSOOB(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testNewSliceFromSignedStartposFailSOOB(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
@@ -138,15 +191,17 @@ describe('Bytes', function () {
         });
 
         it('should fail to create a new slice from a too high start-position (with end position)', function (done) {
-            byteslicetest.testNewSliceFromStartposAndEndposFailStartposOOB(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testNewSliceFromStartposAndEndposFailStartposOOB(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
 
         it('should fail to create a new slice from a too high end-position', function (done) {
-            byteslicetest.testNewSliceFromStartposAndEndposFailEndposOOB(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testNewSliceFromStartposAndEndposFailEndposOOB(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
@@ -160,22 +215,25 @@ describe('Bytes', function () {
         });
 
         it('should fail to create a new slice from a too high signed start-position (with end position)', function (done) {
-            byteslicetest.testNewSliceFromSignedStartposAndEndposFailStartposOOB(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testNewSliceFromSignedStartposAndEndposFailStartposOOB(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
 
         it('should fail to create a new slice from a too high signed end-position', function (done) {
-            byteslicetest.testNewSliceFromSignedStartposAndEndposFailEndposOOB(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testNewSliceFromSignedStartposAndEndposFailEndposOOB(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
 
         it('should fail to create a new slice from signed start- and end-position because start is larger then end', function (done) {
-            byteslicetest.testNewSliceFromSignedStartposAndEndposPositionsOverlap(function (err) {
-                assert.ifError(!err);
+            byteslicetest.testNewSliceFromSignedStartposAndEndposPositionsOverlap(function (err, result) {
+                assert.ifError(err);
+                assert(!result);
                 done();
             })
         });
@@ -232,14 +290,6 @@ describe('Bytes', function () {
             byteslicetest.testSlicesEqualFail(function (err, result) {
                 assert.ifError(err);
                 assert(!result);
-                done();
-            })
-        });
-
-        it('should succesfully delete a slice.', function (done) {
-            byteslicetest.testDeleteSliceSuccess(function (err, result) {
-                assert.ifError(err);
-                assert(result);
                 done();
             })
         });

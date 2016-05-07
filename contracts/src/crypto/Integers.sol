@@ -1,3 +1,8 @@
+/**
+    @title Integers
+
+    Functions for working with large integers.
+*/
 library Integers {
 
     // Modular inverse of a (mod p) using euclid.
@@ -44,7 +49,6 @@ library Integers {
                 jump(loop)
             end:
         }
-
     }
 
 }
