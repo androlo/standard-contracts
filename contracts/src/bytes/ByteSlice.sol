@@ -1,30 +1,30 @@
 /**
-@title ByteSlice
-
-Slices are objects that allow you to work with arrays without copying them.
-
-The methods are designed so as to mimic the behavior of slices in languages
-like Go and Python:
-
-    Function                       In slice notation
-    'at(slice, i)'                 'slice[i]'
-    'slice(slice)'              'slice[:]'
-    'slice(slice, start)'       'slice[start:]'
-    'slice(slice, start, end)'  'slice[start:end]'
-
-There is no shorthand for 'slice[:p]', so one must use 'slice(slice, 0, p)'.
-
-Negative slicing positions and array indices are also allowed.
-
-    'at(slice, -5)'                'slice[-5] = slice[length - 5:]'
-    'slice(slice, -3, -5)'      'slice[length - 5: length - 3]'
-
-There are separate, optimized functions for when unsigned integers are used.
-
-Currently, only bytes and (ascii) strings can be converted to and from a slice.
-Slices works directly on memory, so converting a variable into a slice will
-cause all type information to be erased.
-*/
+ * @title ByteSlice
+ *
+ * Slices are objects that allow you to work with arrays without copying them.
+ *
+ * The methods are designed so as to mimic the behavior of slices in languages
+ * like Go and Python:
+ *
+ *     Function                       In slice notation
+ *     'at(slice, i)'                 'slice[i]'
+ *     'slice(slice)'              'slice[:]'
+ *     'slice(slice, start)'       'slice[start:]'
+ *     'slice(slice, start, end)'  'slice[start:end]'
+ *
+ * There is no shorthand for 'slice[:p]', so one must use 'slice(slice, 0, p)'.
+ *
+ * Negative slicing positions and array indices are also allowed.
+ *
+ *     'at(slice, -5)'                'slice[-5] = slice[length - 5:]'
+ *     'slice(slice, -3, -5)'      'slice[length - 5: length - 3]'
+ *
+ * There are separate, optimized functions for when unsigned integers are used.
+ *
+ * Currently, only bytes and (ascii) strings can be converted to and from a slice.
+ * Slices works directly on memory, so converting a variable into a slice will
+ * cause all type information to be erased.
+ */
 library ByteSlice {
 
     struct Slice {

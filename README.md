@@ -8,6 +8,7 @@ This repository has a number of Solidity contracts in it. Some of these contract
 
 - [Bits](#bits)
 - [Bytes](#bytes)
+- [Crypto](#crypto)
 - [Tests and Validation](#tests-and-validation)
 
 ## Bits
@@ -47,16 +48,6 @@ u = u.bitToggle(0) // u = 15
 
 /* Clear a bit */
 u = u.bitClear(3) // u = 7
-
-/* Binary operations */
-uint v0 = 8;
-uint v1 = 10;
-
-v0.bitAnd(v1, 0); // 0
-v0.bitAnd(v1, 3); // 1
-
-u.bitXor(v, )
-
 ```
 
 Assuming the indices and lengths are within bounds:
@@ -69,7 +60,7 @@ uint u = uint(0).set(i); u == 2**i;
 u.bitGet(i) == u.bitsGet(i, 1); // Same for bitEqual, bitAnd, bitOr, and bitXor.
 
 u.bitEqual(v, i) == (u.bit(i) == v.bit(i))
-u.bitAnd(v, i) == (u.bit(i) & v.bit(i)) // etc.
+u.bitAnd(v, i) == u.bit(i) & v.bit(i) // etc.
 
 u.bitsEqual(v, i, len) == (u.bits(i, len) == v.bits(i, len)) // Same as above.
 ```
