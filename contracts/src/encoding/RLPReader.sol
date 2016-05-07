@@ -1,49 +1,58 @@
-// Keeps reference to the RLP encoded string. If the string is the encoding of
-// a list, it will keep a list of indices to each (non-nested) item so that a
-// new RLPItem can be created.
-//
-// Example:
-//
-// rlpStr = RLP(["haha", ["lala"]])   (a byte array)
-// let 'pos' be the position of the first byte of an item
-// items = [pos("haha"), pos(["lala"])]
-//
-// The RLPItem would be:
-// item = {
-//     start:     &rlpStr
-//     len:       len(rlpStr)
-//     isList:    true
-//     listStart: &items
-//     listLen:   2
-// }
-//
-// When it comes to the sub-items, toRLPItem(item, 0) would be the RLP encoding
-// of "haha", and toRLPItem(item, 1) would be the RLP encoding of ["lala"]. Finally,
-// toRLPItem(toRLPItem(item, 1), 0) would be the RLP encoding of "lala".
+/**
+ * @title RLPReader
+ *
+ * Keeps reference to the RLP encoded string. If the string is the encoding of
+ * a list, it will keep a list of indices to each (non-nested) item so that a
+ * new RLPItem can be created.
+ *
+ * Example:
+ *
+ * rlpStr = RLP(["haha", ["lala"]])   (a byte array)
+ * let 'pos' be the position of the first byte of an item
+ * items = [pos("haha"), pos(["lala"])]
+ *
+ * The RLPItem would be:
+ * item = {
+ *     start:     &rlpStr
+ *     len:       len(rlpStr)
+ *     isList:    true
+ *     listStart: &items
+ *     listLen:   2
+ * }
+ *
+ * When it comes to the sub-items, toRLPItem(item, 0) would be the RLP encoding
+ * of "haha", and toRLPItem(item, 1) would be the RLP encoding of ["lala"]. Finally,
+ * toRLPItem(toRLPItem(item, 1), 0) would be the RLP encoding of "lala".
+ */
 contract RLPReader {
 
     uint constant LENGTH_THRESHOLD = 56;
     uint constant MAX_LENGTH = 0x10000000000000000;
 
     struct RLPItem {
-        uint start;
-        uint len;
-        bool isList;
-        uint listStart;
-        uint listLen;
+        uint _unsafe_memPtr;
+        uint _unsafe_length;
+        bool _unsafe_isList;
+        uint _unsafe_listPtr;
+        uint _unsafe_listLength;
     }
 
-    // Creates an RLPItem from an array of RLP encoded bytes.
+    /// @dev Creates an RLPItem from an array of RLP encoded bytes.
+    /// @dev The RLP encoded bytes.
+    /// @return An RLPItem
     function toRLPItem(bytes memory rlp) internal constant returns (RLPItem memory item) {
         uint start;
         assembly {
             start := add(rlp, 0x20)
         }
-        item = toRLPItem(start);
+        item = _toRLPItem(start);
     }
 
-    // Creates an RLPItem from a sub-item inside an existing RLPItem (of list type).
-    // The 'index' param is the index of the sub-item in the list.
+    /// @dev Creates an RLPItem from a sub-item inside an existing RLPItem.
+    /// The current RLPItem must be of list type.
+    /// @param rlpItem The RLPItem
+    /// @param index The index of the sub-item in the list.
+    /// @return A new RLPItem.
     function toRLPItem(RLPItem memory rlpItem, uint index) internal constant returns (RLPItem memory item) {
         if(index >= rlpItem.len)
             throw;
@@ -52,27 +61,28 @@ contract RLPReader {
         assembly {
             bPos := mload(add(listStart, mul(index, 0x20)))
         }
-        item = toRLPItem(bPos);
+        item = _toRLPItem(bPos);
     }
 
-    // Will create a new RLPItem.
-    //  start - The starting position of the RLP encoded bytes in memory.
-    function toRLPItem(uint start) internal constant returns (RLPItem memory _item) {
+    /// @dev Creates an RLPItem from a memory address.
+    /// @param start The starting position of the RLP encoded bytes in memory.
+    /// @return A new RLPItem.
+    function _toRLPItem(uint start) internal constant returns (RLPItem memory item) {
         uint b0;
         assembly {
             b0 := byte(0, mload(start))
         }
         // This is a single string.
         if (b0 < 0x80) {
-            _item = RLPItem(start, 1, false, 0, 0);
+            item = RLPItem(start, 1, false, 0, 0);
             return;
         }
         if (b0 < 0xB8) {
-            _item = RLPItem(start, 1 + (b0 - 0x80), false, 0, 0);
+            item = RLPItem(start, 1 + (b0 - 0x80), false, 0, 0);
             return;
         }
         if (b0 < 0xC0) {
-            _item = RLPItem(start, _lenLong(start, 0xB7), false, 0, 0);
+            item = RLPItem(start, _lenLong(start, 0xB7), false, 0, 0);
             return;
         }
         // This is a list. Need to calculate where each item is, and how many
@@ -113,11 +123,13 @@ contract RLPReader {
         assembly {
             mstore(0x40, add(listStart, mul(listLen, 0x20)))
         }
-        _item = RLPItem(start, len, true, listStart, listLen);
+        item = RLPItem(start, len, true, listStart, listLen);
     }
 
-    // encode a string to an RLP item. This does not work for lists since there is
-    // no way to encode arbitrary RLP encode-able data.
+    /// @dev encode a string to an RLP item. This does not work for lists
+    /// since there is no way to process arbitrary RLP encode-able data.
+    /// @param data An RLP encoded string.
+    /// @return The RLPItem.
     function encode(bytes memory data) internal constant returns (RLPItem) {
         bytes memory encoded;
         var dataL = data.length;
@@ -155,14 +167,16 @@ contract RLPReader {
         return RLPItem(dataPtr, copyLen, false, 0, 0);
     }
 
-    // Get the bytes arr[start, ... , start + end]
-    // Can only be done if the encoded item is a string (as opposed to a list).
+    /// @dev Decode an RLPItem into bytes. This will not work if the
+    /// RLPItem is a list.
+    /// @param rlpItem The RLPItem.
+    /// @return The decoded string.
     function decode(RLPItem memory rlpItem) internal constant returns (bytes memory bts) {
         if(rlpItem.isList)
             throw;
         uint len;
         uint b0;
-        uint start = rlpItem.start;
+        uint start = rlpItem._unsafe_memPtr;
         assembly {
             b0 := byte(0, mload(start))
         }
@@ -235,20 +249,20 @@ contract RLPTest is RLP {
     // List "0xcac5c0c28080c0c3820400" [[[], ["", ""], []], ["1024"]]
     function testDumpRLPItem(bytes rlp) constant returns (uint start, uint len, bool isList, uint[] list, uint listLen) {
         var item = toRLPItem(rlp);
-        start = item.start;
-        len = item.len;
-        isList = item.isList;
+        start = item._unsafe_memPtr;
+        len = item._unsafe_length;
+        isList = item._unsafe_isList;
         if (isList) {
-            list = new uint[](item.listLen);
-            uint listStart =  item.listStart;
-            for(uint i = 0; i < item.listLen; i++) {
+            list = new uint[](item._unsafe_listLength);
+            uint listStart =  item._unsafe_listPtr;
+            for(uint i = 0; i < item._unsafe_listLength; i++) {
                 uint lp;
                 assembly {
                     lp := mload(add(listStart, mul(i, 0x20)))
                 }
                 list[i] = lp;
             }
-            listLen = item.listLen;
+            listLen = item._unsafe_listLength;
         }
     }
 

@@ -1,8 +1,12 @@
 import {Integers} from "github.com/androlo/standard-contracts/contracts/src/crypto/Integers.sol";
 import {Curve} from "github.com/androlo/standard-contracts/contracts/src/crypto/Curve.sol";
 
-// secp256k1 implementation.
-contract Secp256k1 is Curve {
+/**
+ * @title Secp256k1
+ *
+ * secp256k1 implementation.
+ */
+library Secp256k1 is Curve {
 
     // Field size
     uint constant pp = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F;
@@ -23,7 +27,7 @@ contract Secp256k1 is Curve {
     // uint constant lambda = "0x5363ad4cc05c30e0a5261c028812645a122e22ea20816678df02967c1b23bd72";
     // uint constant beta = "0x7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee";
 
-    // SEC 1: 3.2.3.1
+    /// @dev See Curve.onCurve
     function onCurve(uint[2] P) constant returns (bool) {
         uint p = pp;
         if (0 == P[0] || P[0] == p || 0 == P[1] || P[1] == p)
@@ -33,12 +37,12 @@ contract Secp256k1 is Curve {
         return LHS == RHS;
     }
 
-    // SEC 1: 3.2.2.1
+    /// @dev See Curve.isPubKey
     function isPubKey(uint[2] memory P) constant returns (bool isPK) {
         isPK = onCurve(P);
     }
 
-    // SEC 1: 4.1.4
+    /// @dev See Curve.validateSignature
     function validateSignature(bytes32 message, uint[2] rs, uint[2] Q) constant returns (bool) {
         uint n = nn;
         uint p = pp;
@@ -63,17 +67,20 @@ contract Secp256k1 is Curve {
         return Px % n == rs[0];
     }
 
+    /// @dev See Curve.compress
     function compress(uint[2] P) constant returns (uint8 yBit, uint x) {
         x = P[0];
         yBit = P[1] & 1 == 1 ? uint8(3) : uint8(2);
     }
 
-    function decompress(uint8 yBit, uint x) constant returns (uint) {
+    /// @dev See Curve.decompress
+    function decompress(uint8 yBit, uint x) constant returns (uint[2] P) {
         uint p = pp;
         var y2 = addmod(mulmod(x, mulmod(x, x, p), p), 7, p);
         var y_ = Integers.expmod(y2, (p + 1) / 4, p);
         uint cmp = yBit ^ y_ & 1;
-        return (cmp == 0) ? y_ : p - y_;
+        P[0] = x;
+        P[1] = (cmp == 0) ? y_ : p - y_;
     }
 
     // Point addition, P + Q
@@ -318,6 +325,9 @@ contract Secp256k1 is Curve {
         }
     }
 
+    /// (Px, Py, Pz) to (Px', Py', 1).
+    /// 'zInv' is the modular inverse of 'Pz'
+    /// 'z2Inv' is the square of 'zInv'
     function _toZ1(uint[3] memory P, uint zInv, uint z2Inv) constant internal {
         uint p = pp;
         P[0] = mulmod(P[0], z2Inv, p);
@@ -325,6 +335,7 @@ contract Secp256k1 is Curve {
         P[2] = 1;
     }
 
+    /// (Px, Py, Pz) to (Px', Py', 1). Mutates P. Computes the modular inverse of Pz.
     function _toZ1(uint[3] PJ) constant internal {
         uint p = pp;
         uint zInv = Integers.invmod(PJ[2], p);

@@ -1,3 +1,9 @@
+/**
+ * @title ECCConversion
+ *
+ * Converts keys between different formats.
+ *
+ */
 contract ECCConversion {
 
     // SEC 1: 2.3.3
