@@ -153,68 +153,68 @@ bytes memory bts = "abcdefg"; // Create a new 'bytes' variable in memory.
 
 /* Slicing */
 
-var s = slice(bts); // Create a slice on "abcdefg".
+var s = bts.slice(); // Create a slice on "abcdefg".
 
-var sCopy = slice(s); // slice on "abcdefg"
+var sCopy = s.slice(); // slice on "abcdefg"
 
-var s2 = slice(s, uint(5)); // slice on "fg"
+var s2 = s.slice(uint(5)); // slice on "fg"
 
-var s3 = slice(s, uint(5), 6); // slice on "f"
+var s3 = s.slice(uint(5), 6); // slice on "f"
 
-var s4 = slice(s, -2); // slice on "fg"
+var s4 = s.slice(-2); // slice on "fg"
 
-var s5 = slice(s, -4, -1); // slice on "def"
+var s5 = s.slice(-4, -1); // slice on "def"
 
-var s6 = slice(s5, uint(1), 2); // slice on "e"
+var s6 = s5.slice(uint(1), 2); // slice on "e"
 
-var sEmpt = slice(s, uint(7), 7); // The empty slice.
+var sEmpt = s.slice(uint(7), 7); // The empty slice.
 
-var sEmpt2 = slice(new bytes(0)); // The empty slice.
+var sEmpt2 = (new bytes(0)).slice(); // The empty slice.
 
-var sWillThrow = slice(s, uint(9));
+var sWillThrow = s.slice(uint(9));
 
-var sWillThrowToo = slice(s, uint(0), 8);
+var sWillThrowToo = s.slice(uint(0), 8);
 
 
 /* length */
 
-var len = length(s); // 7
+var len = s.len(); // 7
 
-var len2 = length(s2); // 2
+var len2 = s2.len(); // 2
 
-var len3 = length(sEmpt); // 0
+var len3 = sEmpt.len(); // 0
 
 
 /* Index access */
 
-var b = at(s, uint(2)); // 'c'
+var b = s.at(uint(2)); // 'c'
 
-var b2 = at(s, -2); // 'f'
+var b2 = s.at(-2); // 'f'
 
-var bWillThrow = at(s, uint(7)); // Index out of bounds.
+var bWillThrow = s.at(uint(7)); // Index out of bounds.
 
-set(s, uint(2), 'x'); // at(s, 2) == 'x'
+s.set(uint(2), 'x'); // s.at(uint(2)) == 'x'
 
-set(s, -2, 'y'); // at(s, -2) == at(s, 4) == 'y'
+s.set(-2, 'y'); // s.at(-2) == s.at(uint(4)) == 'y'
 
-set(s, uint(7), 'z'); // Will throw
+s.set(uint(7), 'z'); // Will throw
 
 
 /* Converting to 'bytes memory' */
 
-var bts2 = toBytes(s); // "abcdefg". Copies 7 bytes.
+var bts2 = s.toBytes(); // "abcdefg". Copies 7 bytes.
 
-var bts3 = toBytes(slice(s, -2)); // "fg". Copies 2 bytes.
+var bts3 = s.slice(-2).toBytes(); // "fg". Copies 2 bytes.
 
 /* Equals */
 
-var eq = equal(s, s); // true
+var eq = s.equal(s); // true
 
-equal(s, sEmpt); // false
+s.equal(sEmpt); // false
 
 delete s;
 
-equal(s, sEmpt); // true
+s.equal(sEmpt); // true
 ```
 
 ## Codec
