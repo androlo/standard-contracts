@@ -84,7 +84,7 @@ u.bit(3) // 1 (8)
 
 /* Check if a bit is set */
 u.bitSet(0) // false
-u.bitSet(2) // true
+u.bitSet(3) // true
 
 /* Set the bit at the given index */
 u = u.setBit(2) // u = 14
