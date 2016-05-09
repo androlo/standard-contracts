@@ -151,9 +151,17 @@ Extracting the bytes out of a slice is done using the `toBytes` function, which 
 bytes memory bts = "abcdefg"; // Create a new 'bytes' variable in memory.
 
 
-/* Slicing */
+/* Slicing bytes */
 
 var s = bts.slice(); // Create a slice on "abcdefg".
+
+var sa = bts.slice(uint(2)); // Create a slice on "cdefg"
+
+var sb = bts.slice(-3); // Create a slice on "efg"
+
+var sc = bts.slice(uint(1), 2); // Create a slice on "b"
+
+/* Slicing slices */
 
 var sCopy = s.slice(); // slice on "abcdefg"
 
