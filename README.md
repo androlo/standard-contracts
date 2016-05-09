@@ -65,7 +65,7 @@ The contracts will not be fully optimized until it's clear how formal verificati
 
 Contracts for working with bits.
 
-### Bits
+### BitOps
 
 #### Version 1.0
 

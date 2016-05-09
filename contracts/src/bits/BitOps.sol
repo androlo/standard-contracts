@@ -1,5 +1,5 @@
 /**
- * @title Bits
+ * @title BitOps
  *
  * This library has functions for reading, writing, and comparing the bits
  * in unsigned integers. Bits are returned as unsigned integers; 0 or 1 in the
