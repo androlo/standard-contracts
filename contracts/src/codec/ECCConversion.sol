@@ -1,3 +1,4 @@
+import {Curve} from "github.com/androlo/standard-contracts/contracts/src/crypto/Curve.sol";
 /**
  * @title ECCConversion
  *
