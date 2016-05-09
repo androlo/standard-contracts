@@ -24,7 +24,7 @@
  * of "haha", and toRLPItem(item, 1) would be the RLP encoding of ["lala"]. Finally,
  * toRLPItem(toRLPItem(item, 1), 0) would be the RLP encoding of "lala".
  */
-contract RLPReader {
+library RLPReader {
 
     uint constant LENGTH_THRESHOLD = 56;
     uint constant MAX_LENGTH = 0x10000000000000000;

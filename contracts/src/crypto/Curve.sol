@@ -1,6 +1,7 @@
 /**
  * @title Curve
- * Interface for elliptic curves.
+ *
+ * Interface for elliptic curves and related crypto primitives.
  */
 contract Curve {
 

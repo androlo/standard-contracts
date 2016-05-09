@@ -1,12 +1,17 @@
-import {Integers} from "github.com/androlo/standard-contracts/contracts/src/crypto/Integers.sol";
-import {Curve} from "github.com/androlo/standard-contracts/contracts/src/crypto/Curve.sol";
+import {ECCMath} from "github.com/androlo/standard-contracts/contracts/src/crypto/ECCMath.sol";
 
 /**
  * @title Secp256k1
  *
  * secp256k1 implementation.
+ *
+ * The library implements 'Curve' and 'codec/ECCConversion', but since it's a library
+ * it does not actually extend the contracts. This is a Solidity thing and will be
+ * dealt with later.
  */
-library Secp256k1 is Curve {
+library Secp256k1 {
+
+    // TODO separate curve from crypto primitives?
 
     // Field size
     uint constant pp = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F;
@@ -17,6 +22,7 @@ library Secp256k1 is Curve {
 
     // Order of G
     uint constant nn = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
+
     // Cofactor
     // uint constant hh = 1;
 
@@ -28,7 +34,7 @@ library Secp256k1 is Curve {
     // uint constant beta = "0x7ae96a2b657c07106e64479eac3434e99cf0497512f58995c1396c28719501ee";
 
     /// @dev See Curve.onCurve
-    function onCurve(uint[2] P) constant returns (bool) {
+    function onCurve(uint[2] P) internal constant returns (bool) {
         uint p = pp;
         if (0 == P[0] || P[0] == p || 0 == P[1] || P[1] == p)
             return false;
@@ -38,46 +44,43 @@ library Secp256k1 is Curve {
     }
 
     /// @dev See Curve.isPubKey
-    function isPubKey(uint[2] memory P) constant returns (bool isPK) {
+    function isPubKey(uint[2] memory P) internal constant returns (bool isPK) {
         isPK = onCurve(P);
     }
 
     /// @dev See Curve.validateSignature
-    function validateSignature(bytes32 message, uint[2] rs, uint[2] Q) constant returns (bool) {
+    function validateSignature(bytes32 message, uint[2] rs, uint[2] Q) internal constant returns (bool) {
         uint n = nn;
         uint p = pp;
         if(rs[0] == 0 || rs[0] >= n || rs[1] == 0 || rs[1] > lowSmax)
             return false;
         if (!isPubKey(Q))
             return false;
-        uint h = uint(message);
 
-        uint sInv = Integers.invmod(rs[1], n);
-        uint[2] memory us = [mulmod(h, sInv, n), mulmod(rs[0], sInv, n)];
-
-        uint[3] memory u1G = _mul(us[0], [Gx, Gy]);
-        uint[3] memory u2Q = _mul(us[1], Q);
+        uint sInv = ECCMath.invmod(rs[1], n);
+        uint[3] memory u1G = _mul(mulmod(uint(message), sInv, n), [Gx, Gy]);
+        uint[3] memory u2Q = _mul(mulmod(rs[0], sInv, n), Q);
         uint[3] memory P = _add(u1G, u2Q);
 
         if (P[2] == 0)
             return false;
 
-        uint Px = Integers.invmod(P[2], p); // need Px/Pz^2
+        uint Px = ECCMath.invmod(P[2], p); // need Px/Pz^2
         Px = mulmod(P[0], mulmod(Px, Px, p), p);
         return Px % n == rs[0];
     }
 
     /// @dev See Curve.compress
-    function compress(uint[2] P) constant returns (uint8 yBit, uint x) {
+    function compress(uint[2] P) internal constant returns (uint8 yBit, uint x) {
         x = P[0];
-        yBit = P[1] & 1 == 1 ? uint8(3) : uint8(2);
+        yBit = P[1] & 1 == 1 ? 1 : 0;
     }
 
     /// @dev See Curve.decompress
-    function decompress(uint8 yBit, uint x) constant returns (uint[2] P) {
+    function decompress(uint8 yBit, uint x) internal constant returns (uint[2] P) {
         uint p = pp;
         var y2 = addmod(mulmod(x, mulmod(x, x, p), p), 7, p);
-        var y_ = Integers.expmod(y2, (p + 1) / 4, p);
+        var y_ = ECCMath.expmod(y2, (p + 1) / 4, p);
         uint cmp = yBit ^ y_ & 1;
         P[0] = x;
         P[1] = (cmp == 0) ? y_ : p - y_;
@@ -86,7 +89,7 @@ library Secp256k1 is Curve {
     // Point addition, P + Q
     // inData: Px, Py, Pz, Qx, Qy, Qz
     // outData: Rx, Ry, Rz
-    function _add(uint[3] memory P, uint[3] memory Q) constant internal returns (uint[3] memory R) {
+    function _add(uint[3] memory P, uint[3] memory Q) internal constant returns (uint[3] memory R) {
         if(P[2] == 0)
             return Q;
         if(Q[2] == 0)
@@ -125,7 +128,7 @@ library Secp256k1 is Curve {
     // Point addition, P + Q. P Jacobian, Q affine.
     // inData: Px, Py, Pz, Qx, Qy
     // outData: Rx, Ry, Rz
-    function _addMixed(uint[3] memory P, uint[2] memory Q) constant internal returns (uint[3] memory R) {
+    function _addMixed(uint[3] memory P, uint[2] memory Q) internal constant returns (uint[3] memory R) {
         if(P[2] == 0)
             return [Q[0], Q[1], 1];
         if(Q[1] == 0)
@@ -165,7 +168,7 @@ library Secp256k1 is Curve {
     }
 
     // Same as addMixed but params are different and mutates P.
-    function _addMixedM(uint[3] memory P, uint[2] memory Q) constant internal {
+    function _addMixedM(uint[3] memory P, uint[2] memory Q) internal constant {
         if(P[1] == 0) {
             P[0] = Q[0];
             P[1] = Q[1];
@@ -211,7 +214,7 @@ library Secp256k1 is Curve {
     // Point doubling, 2*P
     // Params: Px, Py, Pz
     // Not concerned about the 1 extra mulmod.
-    function _double(uint[3] memory P) constant internal returns (uint[3] memory Q) {
+    function _double(uint[3] memory P) internal constant returns (uint[3] memory Q) {
         uint p = pp;
         if (P[2] == 0)
             return;
@@ -227,7 +230,7 @@ library Secp256k1 is Curve {
     }
 
     // Same as double but mutates P and is internal only.
-    function _doubleM(uint[3] memory P) constant internal {
+    function _doubleM(uint[3] memory P) internal constant {
         uint p = pp;
         if (P[2] == 0)
             return;
@@ -245,9 +248,9 @@ library Secp256k1 is Curve {
     // Multiplication dP. P affine, wNAF: w=5
     // Params: d, Px, Py
     // Output: Jacobian Q
-    function _mul(uint d, uint[2] memory P) constant returns (uint[3] memory Q) {
+    function _mul(uint d, uint[2] memory P) internal constant returns (uint[3] memory Q) {
         uint p = pp;
-        if (d == 0)
+        if (d == 0) // TODO
             return;
         uint dwPtr; // points to array of NAF coefficients.
         uint i;
@@ -292,7 +295,7 @@ library Secp256k1 is Curve {
         INV[5] = mulmod(PREC[6][2], INV[4], p);         // a6
         INV[6] = mulmod(PREC[7][2], INV[5], p);         // a7
 
-        INV[7] = Integers.invmod(INV[6], p);             // a7inv
+        INV[7] = ECCMath.invmod(INV[6], p);             // a7inv
         INV[8] = INV[7];                                // aNinv (a7inv)
 
         INV[15] = mulmod(INV[5], INV[8], p);            // z7inv
@@ -302,7 +305,7 @@ library Secp256k1 is Curve {
         }
         INV[9] = mulmod(PREC[2][2], INV[8], p);         // z1Inv
         for(k = 0; k < 7; k++) {
-            _toZ1(PREC[k + 1], INV[k + 9], mulmod(INV[k + 9], INV[k + 9], p));
+            ECCMath.toZ1(PREC[k + 1], INV[k + 9], mulmod(INV[k + 9], INV[k + 9], p), p);
         }
 
         // Mult loop
@@ -323,26 +326,6 @@ library Secp256k1 is Curve {
                 _addMixedM(Q, [PREC[pIdx][0], PREC[pIdx][1]]);
             }
         }
-    }
-
-    /// (Px, Py, Pz) to (Px', Py', 1).
-    /// 'zInv' is the modular inverse of 'Pz'
-    /// 'z2Inv' is the square of 'zInv'
-    function _toZ1(uint[3] memory P, uint zInv, uint z2Inv) constant internal {
-        uint p = pp;
-        P[0] = mulmod(P[0], z2Inv, p);
-        P[1] = mulmod(P[1], mulmod(zInv, z2Inv, p), p);
-        P[2] = 1;
-    }
-
-    /// (Px, Py, Pz) to (Px', Py', 1). Mutates P. Computes the modular inverse of Pz.
-    function _toZ1(uint[3] PJ) constant internal {
-        uint p = pp;
-        uint zInv = Integers.invmod(PJ[2], p);
-        uint zInv2 = mulmod(zInv, zInv, p);
-        PJ[0] = mulmod(PJ[0], zInv2, p);
-        PJ[1] = mulmod(PJ[1], mulmod(zInv, zInv2, p), p);
-        PJ[2] = 1;
     }
 
 }

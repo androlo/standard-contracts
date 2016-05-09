@@ -8,7 +8,7 @@
  * Arrays as bit-vectors are not supported; this library is for bit manipulation,
  * not storage/memory management.
  */
-library Bits {
+library BitOps {
 
     /// @dev Set the bit of the uint 'self' at the given 'index'.
     /// @param self The integer.
@@ -76,11 +76,10 @@ library Bits {
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @param numBits The number of bits.
     /// @return The bit.
-    function bitsSet(uint self, uint index, uint numBits) constant returns (bool) {
+    function bitsSet(uint self, uint index, uint numBits) internal constant returns (bool) {
         if (index + numBits > 256)
             throw;
-        uint mask = 2**numBits - 1;
-        return self / 2**index & mask == mask;
+        return bits(self, index, numBits) == 2**numBits - 1;
     }
 
     /// @dev 'self.bit(index) == self.bit(index)'
@@ -88,7 +87,7 @@ library Bits {
     /// @param other The second integer.
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @return The bit.
-    function bitEqual(uint self, uint other, uint index) constant returns (bool) {
+    function bitEqual(uint self, uint other, uint index) internal constant returns (bool) {
         if (index > 255)
             throw;
         uint mask = 2**index;
@@ -101,7 +100,7 @@ library Bits {
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @param numBits The number o bits.
     /// @return The bit.
-    function bitsEqual(uint self, uint other, uint index, uint numBits) constant returns (bool) {
+    function bitsEqual(uint self, uint other, uint index, uint numBits) internal constant returns (bool) {
         if (index + numBits > 256)
             throw;
         uint mask = (2**numBits - 1) * 2**index;
@@ -113,7 +112,7 @@ library Bits {
     /// @param other The second integer.
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @return The bit.
-    function bitAnd(uint self, uint other, uint index) constant returns (uint) {
+    function bitAnd(uint self, uint other, uint index) internal constant returns (uint) {
         if (index > 255)
             throw;
         uint p2 = 2**index;
@@ -126,7 +125,7 @@ library Bits {
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @param numBits The number o bits.
     /// @return The bit.
-    function bitsAnd(uint self, uint other, uint index, uint numBits) constant returns (uint) {
+    function bitsAnd(uint self, uint other, uint index, uint numBits) internal constant returns (uint) {
         if (index + numBits > 256)
             throw;
         uint p2 = 2**index;
@@ -138,7 +137,7 @@ library Bits {
     /// @param other The second integer.
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @return The bit.
-    function bitOr(uint self, uint other, uint index) constant returns (uint) {
+    function bitOr(uint self, uint other, uint index) internal constant returns (uint) {
         if (index > 255)
             throw;
         uint p2 = 2**index;
@@ -151,7 +150,7 @@ library Bits {
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @param numBits The number o bits.
     /// @return The bit.
-    function bitsOr(uint self, uint other, uint index, uint numBits) constant returns (uint) {
+    function bitsOr(uint self, uint other, uint index, uint numBits) internal constant returns (uint) {
         if (index + numBits > 256)
             throw;
         uint p2 = 2**index;
@@ -163,7 +162,7 @@ library Bits {
     /// @param other The second integer.
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @return The bit.
-    function bitXor(uint self, uint other, uint index) constant returns (uint) {
+    function bitXor(uint self, uint other, uint index) internal constant returns (uint) {
         if (index > 255)
             throw;
         uint p2 = 2**index;
@@ -176,7 +175,7 @@ library Bits {
     /// @param index The index. Must be between 0 and 255 (inclusive).
     /// @param numBits The number o bits.
     /// @return The bit.
-    function bitsXor(uint self, uint other, uint index, uint numBits) constant returns (uint) {
+    function bitsXor(uint self, uint other, uint index, uint numBits) internal constant returns (uint) {
         if (index + numBits > 256)
             throw;
         uint p2 = 2**index;

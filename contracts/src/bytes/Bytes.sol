@@ -1,8 +1,7 @@
 /**
  * @title Bytes
  *
- * Methods for working on bytes
- *
+ * Methods for working with bytes.
  */
 library Bytes {
 

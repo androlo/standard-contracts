@@ -1,17 +1,21 @@
 /**
  * @title ECCConversion
  *
- * Converts keys between different formats.
+ * Methods for to converting elliptic-curve cryptographic data between
+ * different formats in accordance with SEC 1 (www.secg.org/sec1-v2.pdf).
  *
  */
 contract ECCConversion {
-
-    // SEC 1: 2.3.3
+    /// @dev Convert a curve point to an array of bytes (octets).
+    /// Ref: SEC 1: 2.3.3
+    /// @param curve The curve.
+    /// @param P The point
+    /// @param compress Whether or not to compress the point.
+    /// @return The bytes.
     function curvePointToBytes(Curve curve, uint[2] memory P, bool compress) internal constant returns (bytes memory bts) {
-        // var curve = Curve(curveContract);
         if(P[0] == 0 && P[1] == 0)
             bts = new bytes(1);
-        else if (!compress) {
+        else if (!compress_) {
             bts = new bytes(65);
             bts[0] = 4;
             uint Px = P[0];
@@ -31,7 +35,11 @@ contract ECCConversion {
         }
     }
 
-    // SEC 1: 2.3.4
+    /// @dev Convert bytes into an elliptic curve point.
+    /// Ref: SEC 1: 2.3.4
+    /// @param curve The curve.
+    /// @param bts The bytes.
+    /// @return The point.
     function bytesToCurvePoint(Curve curve, bytes memory bts) internal constant returns (uint[2] memory P) {
         if (bts.length == 0 && bts[0] == 0)
             return;
@@ -51,40 +59,9 @@ contract ECCConversion {
             assembly {
                 Px := mload(add(bts, 0x21))
             }
-            uint Py = curve.decompress(yBit, Px);
-            P = [Px, Py];
+            P = curve.decompress(yBit, Px);
         }
         else
             throw; // Invalid format.
     }
-}
-
-contract Test is ECCConversion {
-    Curve c = new Secp256k1();
-
-    uint constant Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798;
-    uint constant Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8;
-
-    function testCurvePointToBytesCompressed() constant returns (bytes memory bts) {
-        uint[2] memory P = [Gx, Gy];
-        bts = curvePointToBytes(c, P, true);
-    }
-
-    function testCurvePointToBytesUncompressed() constant returns (bytes memory bts) {
-        uint[2] memory P = [Gx, Gy];
-        bts = curvePointToBytes(c, P, false);
-    }
-
-    function toFromPointCompressed() constant returns (uint[2] memory P) {
-        P = [Gx, Gy];
-        bytes memory bts = curvePointToBytes(c, P, true);
-        P = bytesToCurvePoint(c, bts);
-    }
-
-    function toFromPointUncompressed() constant returns (uint[2] memory P) {
-        P = [Gx, Gy];
-        bytes memory bts = curvePointToBytes(c, P, false);
-        P = bytesToCurvePoint(c, bts);
-    }
-
 }

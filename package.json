@@ -14,5 +14,8 @@
     "bignumber.js": "^2.3.0",
     "fs-extra": "^0.30.0",
     "rlp": "^2.0.0"
+  },
+  "dependencies": {
+    "solc": "^0.3.2-1"
   }
 }

@@ -1,23 +1,73 @@
 # Solidity contracts (Alpha)
 
-This repository has a number of Solidity contracts in it. Some of these contracts will potentially make it into an official Solidity standard library. In fact this repo is mostly just used as side-storage.
+This repository has a number of Solidity contracts in it. Some of these contracts will potentially make it into an official Solidity standard library. This repo is mostly just used as side-storage.
 
 **Warning: This is a brand new library. All the code in here is still in development, and should be considered unreliable. Do not deploy any of this code onto a public node and use it in production.**
 
 ## Table of Content
 
-- [Bits](#bits)
-- [Bytes](#bytes)
-- [Crypto](#crypto)
+- [Grading](#grading)
 - [Tests and Validation](#tests-and-validation)
+- [Bits](#bits)
+  - [BitOps](#bitops)
+- [Bytes](#bytes)
+  - [ByteSlice](#byteslice)
+- [Codec](#codec)
+  - [RLPReader](#rlpreader)
+  - [ECCConversion](#eccconversion)
+- [Crypto](#crypto)
+  - [Curve](#curve)
+  - [ECCMath](#eccmath)
+  - [Secp256k1](#secp256k1)
+  - [Secp256k1curve](#secp256k1curve)
+
+## Grading
+
+There is a system of grading libraries similar to that of node.js. Grades are found next to each contract.
+
+Generally speaking, contracts with a grade less then `5` should not be used except for testing.
+
+#### Grades
+
+1. (`Incomplete`) Contract is incomplete; code is still being added.
+
+2. (`Draft`) First draft is complete, and contract is being tested.
+
+3. (`Tested`) Unit-tests are written, and contract has been debugged.
+
+4. (`Optimized`) Contract has been optimized.
+
+5. (`Stable`) Contract is production ready.
+
+## Tests and validation
+
+The tests are done over RPC calls from Node.js, using `web3` - the official Ethereum JavaScript API.
+
+To run tests, cd into the project root and type:
+
+`npm install`
+
+Start an ethereum development node, for example using the `-dev` flag with `geth` (not a testnet node). The tests assumes that an Ethereum node will answer to RPC calls on port `8545`. It will automatically use the first account in the accounts list (`accounts[0]`) as sender. Some test contracts may require a lot of gas, so you may have to crank up the gas limit.
+
+When all is set up, run: `mocha integration_tests`
+
+#### Test data
+
+Test-data is sometimes generated using [Sage 7.0](http://www.sagemath.org/). The generation scripts are normally referenced so that the process can be replicated.
+
+#### Note on optimization, inline assembly
+
+The contracts will not be optimized until it's clear how formal verification will work, since that is a requirement for many of these contracts. Assembly might be removed from some functions.
 
 ## Bits
-
-### Under construction, don't use.
 
 Contracts for working with bits.
 
 ### Bits
+
+#### Version 1.0
+
+#### Status: Optimized
 
 `Bits` is a library with methods for reading, writing, and manipulating individual or groups of bits. The methods operates on `uint` variables.
 
@@ -71,6 +121,10 @@ Contracts used for working with bytes.
 
 ### ByteSlice
 
+#### Version 1.0
+
+#### Status: Optimized
+
 A `ByteSlice` is created from memory variables of type `bytes`. It is possible to slice slices, access bytes by index, and to extract a `bytes` variable from the slice.
 
 Since dynamic arrays and internal types are used in function input and output, this contract is meant to be `extended`. Later it will be possible to use as a library, when some (planned) upgrades has been made to libraries.
@@ -89,7 +143,7 @@ The `Slice` struct has two members of type `uint`:
 
 Extracting the bytes out of a slice is done using the `toBytes` function, which creates a new `bytes memory` variable, sets its size to `len`, and copies all the bytes from memory address `memPtr` to `memPtr + len - 1` into the new variable.
 
-##### examples
+#### examples
 
 ```
 bytes memory bts = "abcdefg"; // Create a new 'bytes' variable in memory.
@@ -161,22 +215,49 @@ delete s;
 equal(s, sEmpt); // true
 ```
 
-## Crypto
+## Codec
 
-### Under construction, don't use.
+Contracts used for various different types of encoding and decoding.
+
+- [RLPReader](#rlpreader)
+- [ECCConversion](#eccconversion)
+
+### RLPReader
+
+#### Version 1.0
+
+#### Status: Draft
+
+Used to read RLP encoded data.
+
+### ECCConversion
+
+#### Version 1.0
+
+#### Status: Draft
+
+Used to convert ECC data between different formats.
+
+## Crypto
 
 Contracts used for cryptographic operations.
 
 Hashing primitives are not implemented, because Solidity already [provide some](http://solidity.readthedocs.io/en/latest/units-and-global-variables.html#mathematical-and-cryptographic-functions).
 
-- [Curve](#curve) (Interface)
+- [Curve](#curve)
+- [ECCMath](#eccmath)
 - [Secp256k1](#secp256k1)
+- [Secp256k1curve](#secp256k1curve)
 
 ### Curve
 
+#### Version 1.0
+
+#### Status: Stable
+
 Curve is an interface for elliptic curves. The cryptographic properties (e.g. defined over finite fields) of these curves are implied.
 
-The only functions that may be implemented are those that does not involve passing a private key to the contract, meaning functions like 'sign' and 'private-to-public' are not included.
+The only functions that may be implemented are those that does not involve passing a private key to the contract, meaning functions like 'sign' and 'private-to-public' are not included. There is also no public key recovery function in the interface yet.
 
 The contracts use the mathematical representations of coordinates and points, and is thus key-format agnostic. Contracts that require keys to be encoded in a particular way would manage the encoding/decoding themselves; and delegate the actual curve operations to whatever implementation is used (only `secp256k1` is provided at this point).
 
@@ -209,13 +290,13 @@ For a given `Px` and a `yBit = Py % 2`, returns the point `P = (Px, Py)`.
 
 Validate the signature `(r, s)` of a 32 byte hash `msg` against a public key `Q`. Returns `true` if the signature is valid. Will only validate signatures on lower-s form.
 
-### Secp256k1
+### ECCMath
 
-Implementation of the `secp256k1` curve.
+#### Version 1.0
 
-### Integers
+#### Status: Optimized
 
-Functions that has to do with integers. Naming is trying to be consistent with similar solidity functions, e.g. 'invmod' and 'expmod' is like 'addmod', 'mulmod', etc.
+Math helper. Naming is trying to be consistent with similar solidity functions, e.g. 'invmod' and 'expmod' is like 'addmod', 'mulmod', etc.
 
 #### invmod
 
@@ -223,13 +304,55 @@ Functions that has to do with integers. Naming is trying to be consistent with s
 
 Constraints: `a` and `p` must be coprime.
 
-Uses the euclidian algorithm to find the modular inverse.
+Uses the euclidean algorithm to find the modular inverse.
 
 #### expmod
 
 `uint x = expmod(b, e, m)` is used to compute the number `b**e % m`
 
 The function is a Solidity adaptation of the exponentiation formula found in the [Serpent examples](https://github.com/ethereum/serpent/blob/develop/examples/ecc/modexp.se).
+
+### Secp256k1
+
+#### Version 1.0
+
+#### Status: Optimized
+
+Library functions for the `secp256k1` curve. Includes internal versions of the `Curve` functions but also a number of internal functions for doing point arithmetic.
+
+The output of all function is in Jacobian coordinates.
+
+#### add
+
+Point-addition of two points `P` and `Q`. Both input points must be expressed in Jacobian coordinates.
+
+#### addMixed
+
+Same as `add` except the second point is expressed in affine coordinates.
+
+#### addMixedM
+
+Same as `addMixed` but mutates the first point rather then creating a new one.
+
+#### double
+
+Doubles a point `P`. The point must be expressed in Jacobian coordinates.
+
+#### doubleM
+
+Same as `double` but mutates the point.
+
+#### mul
+
+Multiplication of a scalar `d` and a point `P`. The point must be expressed in affine coordinates.
+
+### Secp256k1Curve
+
+#### Version 1.0
+
+#### Status: Optimized
+
+Implementation of `Curve` based on the `secp256k1` library.
 
 ### Tests
 
@@ -292,6 +415,41 @@ tohex3 = lambda (x, y, z): (tohex(x), tohex(y), tohex(z))
 randpoints = [tohex3(secp256k1.random_point()) for i in range(0, 40)]
 ```
 
+Script for calculating sums from randpoints (each element plus the next one).
+
+```
+sums = []
+for i in range(1, 40):
+    P = secp256k1.point((Integer(randpoints[i - 1][0]), Integer(randpoints[i - 1][1])));
+    Q = secp256k1.point((Integer(randpoints[i][0]), Integer(randpoints[i][1])));
+    sums.append(tohex2(P + Q))
+```
+
+Script for doubling each point.
+
+```
+dbls = []
+for i in range(0, 40):
+    P = secp256k1.point((Integer(randpoints[i][0]), Integer(randpoints[i][1])));
+    dbls.append(tohex2(P + P))
+```
+
+Script for generating a series of random elements in Zp/Z.
+
+```
+ZZp = Integers(p)
+randints = [tohex(ZZp.random_element()) for i in range(0, 40)]
+```
+
+Script for doing point multiplication of random integers and points.
+
+```
+prods = []
+for i in range(0, 40):
+    P = secp256k1.point((Integer(randpoints[i][0]), Integer(randpoints[i][1])));
+    prods.append(tohex2(Integer(randints[i]) * P))
+```
+
 Script used to generate some numbers for modular inverse:
 
 ```
@@ -312,21 +470,3 @@ Output:
 
 im = lambda a, p: "0x" + format(inverse_mod(a, p), '064x')
 ```
-
-## Tests and validation
-
-cd into the project root.
-
-`npm install`
-
-Start an ethereum development node, for example using the `-dev` flag with geth (not a testnet node). The tests assumes that an Ethereum node will answer to RPC calls on port `8545`. It will automatically use the first account in the accounts list (`accounts[0]`) as sender. Some test contracts may require a lot of gas, so you may have to crank up the gas limit.
-
-When all is set up, run: `mocha integration_tests`
-
-#### Test data
-
-Test-data is sometimes generated using [Sage 7.0](http://www.sagemath.org/). The generation scripts are normally referenced so that the process can be replicated.
-
-#### Note on optimization, inline assembly
-
-The contracts will not be optimized until it's clear how formal verification will work, since that is a requirement for many of these contracts. Assembly might be removed from some functions.
