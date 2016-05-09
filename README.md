@@ -107,7 +107,7 @@ uint(~0).get(i) = 1;
 
 uint u = uint(0).set(i); u == 2**i;
 
-u.bitGet(i) == u.bitsGet(i, 1); // Same for bitEqual, bitAnd, bitOr, and bitXor.
+u.bit(i) == u.bits(i, 1); // Same for bitEqual, bitAnd, bitOr, and bitXor.
 
 u.bitEqual(v, i) == (u.bit(i) == v.bit(i))
 u.bitAnd(v, i) == u.bit(i) & v.bit(i) // etc.
