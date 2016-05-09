@@ -57,7 +57,7 @@ Test-data is sometimes generated using [Sage 7.0](http://www.sagemath.org/). The
 
 #### Note on optimization, inline assembly
 
-The contracts will not be optimized until it's clear how formal verification will work, since that is a requirement for many of these contracts. Assembly might be removed from some functions.
+The contracts will not be fully optimized until it's clear how formal verification will work, since that is a requirement for many of these contracts. Assembly might be removed from some functions.
 
 ## Bits
 
