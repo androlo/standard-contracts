@@ -2,6 +2,8 @@
 
 This repository has a number of Solidity contracts in it. Some of these contracts will potentially make it into an official Solidity standard library. This repo is mostly just used as side-storage.
 
+Short descriptions of contracts and methods can be found in this README, as well as some examples. More detailed documentation can be found in the contracts themselves.
+
 **Warning: This is a brand new library. All the code in here is still in development, and should be considered unreliable. Do not deploy any of this code onto a public node and use it in production.**
 
 ## Table of Content
