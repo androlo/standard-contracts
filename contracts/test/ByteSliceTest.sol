@@ -191,7 +191,7 @@ contract ByteSliceTest {
         ret = true;
         var bts = _testArrDynSize(0, 3);
         var s = bts.slice();
-        s.slice(2, 1);
+        s.slice(uint(2), 1);
     }
 
     function testNewSliceFromSignedStartposAndEndpos() constant returns (bool ret) {

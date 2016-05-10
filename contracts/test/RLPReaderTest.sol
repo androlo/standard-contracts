@@ -13,23 +13,23 @@ contract RLPReaderTest {
         ret = rlp.toRLPItem().isList();
     }
 
-    function tstNumItems(bytes rlp) constant returns (uint) {
+    function testNumItems(bytes rlp) constant returns (uint) {
         return rlp.toRLPItem().numItems();
     }
 
-    function item(bytes rlp, uint index) constant returns (uint memPtr, uint length, bool isList, uint[] list, uint listLen) {
+    function testSubItem(bytes rlp, uint index) constant returns (uint memPtr, uint length, bool isList, uint[] list, uint listLen) {
         return _dumpRLPItem(rlp.toRLPItem().item(index));
     }
 
-    function decode(bytes rlp) constant returns (bytes memory bts) {
+    function testDecode(bytes rlp) constant returns (bytes memory bts) {
         return rlp.toRLPItem().decode();
     }
 
-    function copyToBytes(uint btsPtr, bytes memory tgt, uint btsLen) constant returns (bytes memory btsOut) {
+    function testCopyToBytes(uint btsPtr, bytes memory tgt, uint btsLen) constant returns (bytes memory btsOut) {
         RLPReader._copyToBytes(btsPtr, tgt, btsLen);
     }
 
-    function lenLong(uint pos, uint rlpOffset) constant returns (uint len) {
+    function testLenLong(uint pos, uint rlpOffset) constant returns (uint len) {
         return RLPReader._lenLong(pos, rlpOffset);
     }
 
@@ -38,16 +38,16 @@ contract RLPReaderTest {
         len = item._unsafe_length;
         isList = item._unsafe_isList;
         if (isList) {
-            list = new uint[](item._unsafe_listLength);
+            listLen = item._unsafe_listLength;
+            list = new uint[](listLen);
             uint listStart =  item._unsafe_listPtr;
-            for(uint i = 0; i < item._unsafe_listLength; i++) {
+            for(uint i = 0; i < listLen; i++) {
                 uint lp;
                 assembly {
                     lp := mload(add(listStart, mul(i, 0x20)))
                 }
                 list[i] = lp;
             }
-            listLen = item._unsafe_listLength;
         }
     }
 

@@ -236,9 +236,57 @@ Contracts used for various different types of encoding and decoding.
 
 #### Version 1.0
 
-#### Status: Draft
+#### Status: Tested
 
-Used to read RLP encoded data.
+Used to read RLP encoded data. The data is converted into an `RLPItem` which keeps track of the bytes in memory, marks whether or not it's a list, and also creates indices for each sub-item in the case of a list (which can be converted into new items).
+
+There is no generic types in Solidity, which means decoding an RLP encoded list can't be done, but through the `RLPItem` it is still possible to parse the data. There is also a `decode` method for decoding (sub) items that are strings.
+
+#### Examples
+
+```
+// This is the RLP encoding of "0x0102030405060708"
+// Bytes can't actually be assigned like this, just for show.
+bytes memory rlpString = "0x880102030405060708";
+
+var sItm = rlpString.toRLPItem();
+
+sItem.isList(); // false
+
+sItem.numItems(); // 0
+
+sItem.decode(); // "0x0102030405060708"
+
+// This is the RLP encoding of [[1, 2], 1, [1, 2, 3]]
+bytes memory rlpList = "0xC9C201028101C3010203";
+
+var lItm = rlpList.toRLPItem(); // New RLPItem
+
+lItem.isList(); // true
+
+lItem.numItems(); // 3
+
+var lItm0 = lItem.item(0); // "0xC20102", enc: [1, 2]
+
+lItem0.item(0).decode(); // "0x01"
+
+lItem0.item(1).decode(); // "0x02"
+
+
+var lItm1 = lItem.item(1); // "0x8101", enc: 1
+
+lItm1.decode(); // "0x01"
+
+
+var lItem2 = lItem.item(2); // "0xC3010203", enc: [1, 2, 3]
+
+lItem2.item(0).decode(); // "0x01"
+
+lItem2.item(1).decode(); // "0x02"
+
+lItem2.item(2).decode(); // "0x03"
+
+```
 
 ### ECCConversion
 
