@@ -33,11 +33,11 @@
 library RLPReader {
 
     struct RLPItem {
-        uint _unsafe_memPtr;
-        uint _unsafe_length;
-        bool _unsafe_isList;
-        uint _unsafe_listPtr;
-        uint _unsafe_listLength;
+        uint _unsafe_memPtr; // Pointer to the RLP-encoded bytes.
+        uint _unsafe_length; // Number of bytes. This is the full length of the string.
+        bool _unsafe_isList; // Whether or not the encoded bytes is a list.
+        uint _unsafe_listPtr; // Pointer to the list.
+        uint _unsafe_listLength; // Length of the list.
     }
 
     /// @dev Creates an RLPItem from an array of RLP encoded bytes.
@@ -131,28 +131,35 @@ library RLPReader {
             return;
         }
         if (b0 < 0xB8) {
-            item = RLPItem(start, b0 - 0x80, false, 0, 0);
+            item = RLPItem(start, 1 + b0 - 0x80, false, 0, 0);
             return;
         }
         if (b0 < 0xC0) {
             item = RLPItem(start, _lenLong(start, 0xB7), false, 0, 0);
             return;
         }
+
         // This is a list. Need to calculate where each item is, and how many
-        // there are in total.
+        // items there are in total.
+        if(b0 == 0xC0) {
+            item = RLPItem(start, 1, true, 0, 0);
+            return;
+        }
         uint listStart;
         assembly {
             listStart := mload(0x40)
         }
         uint listLen;
-        uint pos;
         uint len;
-        pos = start + 1;
-        if(b0 < 0xF8)
+        uint pos;
+        if(b0 < 0xF8) {
+            pos = start + 1;
             len = b0 - 0xC0 + 1;
-        else
-            len = 1 + _lenLong(start, 0xF7);
-
+        }
+        else {
+            pos = start + 1 + b0 - 0xF7;
+            len = _lenLong(start, 0xF7);
+        }
         uint end = start + len;
         while(pos < end) {
             assembly {
@@ -162,9 +169,9 @@ library RLPReader {
             if (b0 <= 0x80) // 0x80 is length 0 so just push one byte ahead like with < 0x80
                 pos++;
             else if (b0 < 0xB8)
-                pos += 1 + (b0 - 0x80);
+                pos += b0 - 0x80 + 1;
             else if (b0 < 0xC0)
-                pos += _lenLong(start, 0xB7);
+                pos += _lenLong(pos, 0xB7);
             else if (b0 == 0xC0) // 0 length list so have to increment by one.
                 pos++;
             else if (b0 < 0xF8)

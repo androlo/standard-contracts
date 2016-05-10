@@ -5,35 +5,35 @@ contract RLPReaderTest {
     using RLPReader for RLPReader.RLPItem;
     using RLPReader for bytes;
 
-    function toRLPItem(bytes memory self) constant returns (uint memPtr, uint length, bool isList, uint[] list, uint listLen) {
-        return _dumpRLPItem(self._toRLPItem());
+    function testItem(bytes rlp) constant returns (uint start, uint len, bool isList, uint[] list, uint listLen) {
+        return _dumpRLPItem(rlp.toRLPItem());
     }
 
-    function isList (RLPItem memory self) constant returns (bool) {
-        return self.isList();
+    function testIsList(bytes rlp) constant returns (bool ret) {
+        ret = rlp.toRLPItem().isList();
     }
 
-    function numItems (RLPItem memory self) constant returns (uint) {
-        return self.numItems();
+    function tstNumItems(bytes rlp) constant returns (uint) {
+        return rlp.toRLPItem().numItems();
     }
 
-    function item(RLPItem memory self, uint index) constant returns (RLPItem memory) {
-        return self.item(index);
+    function item(bytes rlp, uint index) constant returns (uint memPtr, uint length, bool isList, uint[] list, uint listLen) {
+        return _dumpRLPItem(rlp.toRLPItem().item(index));
     }
 
-    function decode(RLPItem memory self) constant returns (bytes memory bts) {
-        return self.decode();
+    function decode(bytes rlp) constant returns (bytes memory bts) {
+        return rlp.toRLPItem().decode();
     }
 
-    function _copyToBytes(uint btsPtr, bytes memory tgt, uint btsLen) constant returns (bytes memory btsOut) {
+    function copyToBytes(uint btsPtr, bytes memory tgt, uint btsLen) constant returns (bytes memory btsOut) {
         RLPReader._copyToBytes(btsPtr, tgt, btsLen);
     }
 
-    function _lenLong(uint pos, uint rlpOffset) constant returns (uint len) {
-
+    function lenLong(uint pos, uint rlpOffset) constant returns (uint len) {
+        return RLPReader._lenLong(pos, rlpOffset);
     }
 
-    function _dumpRLPItem(RLPItem memory item) constant returns (uint start, uint len, bool isList, uint[] list, uint listLen) {
+    function _dumpRLPItem(RLPReader.RLPItem memory item) internal constant returns (uint start, uint len, bool isList, uint[] list, uint listLen) {
         start = item._unsafe_memPtr;
         len = item._unsafe_length;
         isList = item._unsafe_isList;
@@ -52,27 +52,3 @@ contract RLPReaderTest {
     }
 
 }
-
-/*
-using RLPReader for RLPReader.RLPItem;
-    using RLPReader for bytes;
-    // String "0xB84001020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708"
-    // String "0xB9010001020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708010203040506070801020304050607080102030405060708"
-    // List "0xC0" []
-    // List "0xC3820400" ["1024"]
-    // List "0xcac5c0c28080c0c3820400" [[[], ["", ""], []], ["1024"]]
-
-
-    function testToItemGas(bytes rlp) constant returns (uint gas) {
-        gas = msg.gas;
-        rlp.toRLPItem();
-        gas -= msg.gas;
-    }
-
-    function testDecode(bytes rlp) constant returns (bytes bts, uint gas) {
-        var item = rlp.toRLPItem();
-        gas = msg.gas;
-        bts = item.decode();
-        gas -= msg.gas;
-    }
-    */
