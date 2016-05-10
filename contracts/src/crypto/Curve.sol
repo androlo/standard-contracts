@@ -2,6 +2,8 @@
  * @title Curve
  *
  * Interface for elliptic curves and related crypto primitives.
+ *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
  */
 contract Curve {
 

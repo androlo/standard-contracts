@@ -1,9 +1,14 @@
 import {Secp256k1} from "github.com/androlo/standard-contracts/contracts/src/crypto/Secp256k1.sol";
 import {Curve} from "github.com/androlo/standard-contracts/contracts/src/crypto/Curve.sol";
 
-/// @title Secp256k1Curve
-/// Secp256k1 contract that implements the Curve interface.
-/// See 'Curve' for details.
+/**
+ * @title Secp256k1Curve
+ *
+ * Secp256k1 contract that implements the Curve interface.
+ * See 'Curve' for details.
+ *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
+ */
 contract Secp256k1Curve is Curve {
 
     function onCurve(uint[2] P) constant returns (bool) {

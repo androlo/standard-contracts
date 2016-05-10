@@ -7,6 +7,8 @@
  *
  * Arrays as bit-vectors are not supported; this library is for bit manipulation,
  * not storage/memory management.
+ *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
  */
 library BitOps {
 

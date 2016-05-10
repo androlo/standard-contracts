@@ -2,6 +2,8 @@
  * @title Bytes
  *
  * Methods for working with bytes.
+ *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
  */
 library Bytes {
 

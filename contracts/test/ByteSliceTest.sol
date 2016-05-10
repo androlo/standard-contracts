@@ -186,6 +186,14 @@ contract ByteSliceTest {
         s.slice(uint(0), uint(2));
     }
 
+    // Should throw
+    function testNewSliceFromStartposAndEndposPositionsOverlap() constant returns (bool ret) {
+        ret = true;
+        var bts = _testArrDynSize(0, 3);
+        var s = bts.slice();
+        s.slice(2, 1);
+    }
+
     function testNewSliceFromSignedStartposAndEndpos() constant returns (bool ret) {
         var bts = _testArrDynSize(0, 25);
         var s = bts.slice();
@@ -213,9 +221,9 @@ contract ByteSliceTest {
     // Should throw
     function testNewSliceFromSignedStartposAndEndposPositionsOverlap() constant returns (bool ret) {
         ret = true;
-        var bts = _testArrDynSize(0, 1);
+        var bts = _testArrDynSize(0, 3);
         var s = bts.slice();
-        s.slice(-2, -1);
+        s.slice(-1, -2);
     }
 
     function testNewSliceFromStartposEmptyBytes() constant returns (bool ret) {

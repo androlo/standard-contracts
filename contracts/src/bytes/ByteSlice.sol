@@ -24,6 +24,8 @@
  * Currently, only bytes and (ascii) strings can be converted to and from a slice.
  * Slices works directly on memory, so converting a variable into a slice will
  * cause all type information to be erased.
+ *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
  */
 library ByteSlice {
 

@@ -1,8 +1,10 @@
 /**
-    @title ECCMath
-
-    Functions for working with integers, curve-points, etc.
-*/
+ * @title ECCMath
+ *
+ * Functions for working with integers, curve-points, etc.
+ *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
+ */
 library ECCMath {
     /// @dev Modular inverse of a (mod p) using euclid.
     /// 'a' and 'p' must be co-prime.

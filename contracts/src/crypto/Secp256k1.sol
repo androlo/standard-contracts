@@ -8,6 +8,8 @@ import {ECCMath} from "github.com/androlo/standard-contracts/contracts/src/crypt
  * The library implements 'Curve' and 'codec/ECCConversion', but since it's a library
  * it does not actually extend the contracts. This is a Solidity thing and will be
  * dealt with later.
+ *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
  */
 library Secp256k1 {
 

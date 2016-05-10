@@ -5,6 +5,7 @@ import {Curve} from "github.com/androlo/standard-contracts/contracts/src/crypto/
  * Methods for to converting elliptic-curve cryptographic data between
  * different formats in accordance with SEC 1 (www.secg.org/sec1-v2.pdf).
  *
+ * @author Andreas Olofsson (androlo1980@gmail.com)
  */
 contract ECCConversion {
     /// @dev Convert a curve point to an array of bytes (octets).
