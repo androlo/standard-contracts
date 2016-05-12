@@ -45,21 +45,22 @@ const ABI = [{
 
 describe('Crypto', function () {
 
-    before(function (done) {
-        this.timeout(300000); // 5 minutes.
-        util.initWeb3(function (err) {
-            if (err)
-                return done(err);
-            util.deploy(ABI, bytecode, function (err, contract) {
+    describe('Secp256k1Curve', function () {
+
+        before(function (done) {
+            this.timeout(300000); // 5 minutes.
+            console.log("\tInitializing web3 and deploying the Secp256k1 test contract.");
+            util.initWeb3(function (err) {
                 if (err)
                     return done(err);
-                secp256k1 = contract;
-                done();
+                util.deploy(ABI, bytecode, function (err, contract) {
+                    if (err)
+                        return done(err);
+                    secp256k1 = contract;
+                    done();
+                });
             });
         });
-    });
-
-    describe('Secp256k1Curve', function () {
 
         describe('#onCurve()', function () {
 

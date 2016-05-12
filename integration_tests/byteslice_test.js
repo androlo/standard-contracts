@@ -13,6 +13,7 @@ describe('Bytes', function () {
 
         before(function (done) {
             this.timeout(300000); // 5 minutes.
+            console.log("\tInitializing web3 and deploying the ByteSlice test contract.");
             util.initWeb3(function (err) {
                 if (err)
                     return done(err);

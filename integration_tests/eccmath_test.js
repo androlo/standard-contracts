@@ -60,22 +60,23 @@ const numsToExpFLT = [
 
 describe('Crypto', function () {
 
-    before(function (done) {
-        this.timeout(300000); // 5 minutes.
-        util.initWeb3(function (err) {
-            if (err)
-                return done(err);
-            util.deploy(ABI, bytecode, function (err, contract) {
-                if (err)
-                    return done(err);
-                eccmath = contract;
-                done();
-            });
-        });
-    });
-
     describe('ECCMath', function () {
 
+        before(function (done) {
+            this.timeout(300000); // 5 minutes.
+            console.log("\tInitializing web3 and deploying the ECCMath test contract.");
+            util.initWeb3(function (err) {
+                if (err)
+                    return done(err);
+                util.deploy(ABI, bytecode, function (err, contract) {
+                    if (err)
+                        return done(err);
+                    eccmath = contract;
+                    done();
+                });
+            });
+        });
+        
         describe('#invmod()', function () {
 
             it('should calculate the values from the list', function (done) {

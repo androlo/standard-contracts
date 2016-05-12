@@ -11,9 +11,9 @@ contract RLPReaderTest {
         return _testItem(item);
     }
 
-    function testItemStrict(bytes rlp) constant returns (uint memPtr, uint len, bool isList, uint[] list, uint listLen) {
-        var item = rlp.toRLPItem(true);
-        return _testItem(item);
+    function testItemStrict(bytes rlp) constant returns (bool res) {
+        res = true;
+        rlp.toRLPItem(true);
     }
 
     function testFirst(bytes rlp) constant returns (uint memPtr, uint len, byte first) {
@@ -29,6 +29,18 @@ contract RLPReaderTest {
 
     function testIsList(bytes rlp) constant returns (bool ret) {
         ret = rlp.toRLPItem().isList();
+    }
+
+    function testIsData(bytes rlp) constant returns (bool ret) {
+        ret = rlp.toRLPItem().isData();
+    }
+
+    function testIsNull(bytes rlp) constant returns (bool ret) {
+        ret = rlp.toRLPItem().isNull();
+    }
+
+    function testIsEmpty(bytes rlp) constant returns (bool ret) {
+        ret = rlp.toRLPItem().isEmpty();
     }
 
     function testItems(bytes rlp) constant returns (uint) {
@@ -64,6 +76,10 @@ contract RLPReaderTest {
 
     function testToAddress(bytes rlp) constant returns (address) {
         return rlp.toRLPItem().toAddress();
+    }
+
+    function testToByte(bytes rlp) constant returns (byte) {
+        return rlp.toRLPItem().toByte();
     }
 
     function testToBool(bytes rlp) constant returns (bool) {

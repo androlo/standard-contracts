@@ -15,22 +15,23 @@ const ABI = [{"constant":true,"inputs":[{"name":"P","type":"uint256[3]"},{"name"
 
 describe('Crypto', function () {
 
-    before(function (done) {
-        this.timeout(300000); // 5 minutes.
-        util.initWeb3(function (err) {
-            if (err)
-                return done(err);
-            util.deploy(ABI, bytecode, function (err, contract) {
-                if (err)
-                    return done(err);
-                secp256k1 = contract;
-                done();
-            });
-        });
-    });
-
     describe('Secp256k1Arith', function () {
 
+        before(function (done) {
+            this.timeout(300000); // 5 minutes.
+            console.log("\tInitializing web3 and deploying the Secp256k1 arithmetic test contract.");
+            util.initWeb3(function (err) {
+                if (err)
+                    return done(err);
+                util.deploy(ABI, bytecode, function (err, contract) {
+                    if (err)
+                        return done(err);
+                    secp256k1 = contract;
+                    done();
+                });
+            });
+        });
+        
         describe('#add()', function () {
 
             it('should add a set of points successfully', function (done) {

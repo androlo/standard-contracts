@@ -77,9 +77,9 @@ library RLP {
         var item = toRLPItem(self);
         if(strict) {
             uint len = self.length;
-            if(_payloadOffset(item) >= len)
+            if(_payloadOffset(item) > len)
                 throw;
-            if(_itemLength(item._unsafe_memPtr) > len)
+            if(_itemLength(item._unsafe_memPtr) != len)
                 throw;
             if(!_validate(item))
                 throw;
@@ -251,6 +251,23 @@ library RLP {
         return temp == 1 ? true : false;
     }
 
+    /// @dev Decode an RLPItem into a byte. This will not work if the
+    /// RLPItem is a list.
+    /// @param self The RLPItem.
+    /// @return The decoded string.
+    function toByte(RLPItem memory self) internal constant returns (byte data) {
+        if(!isData(self))
+            throw;
+        var (rStartPos, len) = _decode(self);
+        if (len != 1)
+            throw;
+        uint temp;
+        assembly {
+            temp := byte(0, mload(rStartPos))
+        }
+        return byte(temp);
+    }
+
     /// @dev Decode an RLPItem into an int. This will not work if the
     /// RLPItem is a list.
     /// @param self The RLPItem.
@@ -310,14 +327,14 @@ library RLP {
             len = 1;
         else if (b0 < DATA_LONG_START)
             len = b0 - DATA_SHORT_START + 1;
-        else if (b0 < 0xC0) {
+        else if (b0 < LIST_SHORT_START) {
             assembly {
                 let bLen := sub(b0, 0xB7) // bytes length (DATA_LONG_OFFSET)
                 let dLen := div(mload(add(memPtr, 1)), exp(256, sub(32, bLen))) // data length
                 len := add(1, add(bLen, dLen)) // total length
             }
         }
-        else if (b0 < LIST_LONG_OFFSET)
+        else if (b0 < LIST_LONG_START)
             len = b0 - LIST_SHORT_START + 1;
         else {
             assembly {
@@ -379,20 +396,3 @@ library RLP {
             }
         }
     }
-
-    // Check that an RLP item is valid.
-    function _validate(RLPItem memory self) private constant returns (bool ret) {
-        // Check that RLP is well-formed.
-        uint b0;
-        uint b1;
-        uint memPtr = self._unsafe_memPtr;
-        assembly {
-            b0 := byte(0, mload(memPtr))
-            b1 := byte(1, mload(memPtr))
-        }
-        if(b0 == DATA_SHORT_START + 1 && b1 < DATA_SHORT_START)
-            throw;
-
-    }
-
-}

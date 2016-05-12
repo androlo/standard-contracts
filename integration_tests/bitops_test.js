@@ -14,6 +14,7 @@ describe('Bits', function () {
 
         before(function (done) {
             this.timeout(300000); // 5 minutes.
+            console.log("\tInitializing web3 and deploying the BitOps test contract.");
             util.initWeb3(function (err) {
                 if (err)
                     return done(err);

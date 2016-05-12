@@ -1,10 +1,12 @@
-# Solidity contracts (Alpha)
+# Solidity contracts (Beta)
 
-This repository has a number of Solidity contracts in it. Some of these contracts will potentially make it into an official Solidity standard library. This repo is mostly just used as side-storage.
+This repository has a number of Solidity contracts in it. Some of these contracts will potentially make it into an official Solidity standard library.
+
+Contract imports uses the github path, so can be imported into the online compiler, or the repo can be cloned and contract compiled locally using solc's path re-mapping features.
 
 Short descriptions of contracts and methods can be found in this README, as well as some examples. More detailed documentation can be found in the contracts themselves.
 
-**Warning: This is a brand new library. All the code in here is still in development, and should be considered unreliable. Do not deploy any of this code onto a public node and use it in production.**
+**Warning: All the code in here is still in development, and should be considered unreliable. Do not deploy any of this code onto a public node and use it in production.**
 
 ## Table of Content
 
@@ -25,9 +27,9 @@ Short descriptions of contracts and methods can be found in this README, as well
 
 ## Grading
 
-There is a system of grading libraries similar to that of node.js. Grades are found next to each contract.
+There is a system of grades for contracts. Grades are found along with the version in contract descriptions. They are temporary and will be changed when the library is stable (new contracts will be developed on separate branches then).
 
-Generally speaking, contracts with a grade less then `5` should not be used except for testing.
+Generally speaking, contracts with a grade less then `3` should not be used, and those less then `5` should only be used when testing.
 
 #### Grades
 
@@ -43,23 +45,25 @@ Generally speaking, contracts with a grade less then `5` should not be used exce
 
 ## Tests and validation
 
-The tests are done over RPC calls from Node.js, using `web3` - the official Ethereum JavaScript API.
+The tests are done over RPC calls from Node.js, using `web3` - the official Ethereum JavaScript API. They require a running development node. Any Ethereum client should work in theory, but the tests has only been run against a `geth` node.
+
+### Running
 
 To run tests, cd into the project root and type:
 
 `npm install`
 
-Start an ethereum development node, for example using the `-dev` flag with `geth` (not a testnet node). The tests assumes that an Ethereum node will answer to RPC calls on port `8545`. It will automatically use the first account in the accounts list (`accounts[0]`) as sender. Some test contracts may require a lot of gas, so you may have to crank up the gas limit.
+Start an ethereum development node, for example using the `-dev` flag with `geth` (not a testnet node). The tests assumes that an Ethereum node will answer to RPC calls on port `8545`. It will automatically use the first account in the accounts list (`accounts[0]`) as sender. Some test contracts require a lot of gas, so you may have to crank up the gas limit and make sure the active account has a lot of gas.
 
 When all is set up, run: `mocha integration_tests`
 
 #### Test data
 
-Test-data is sometimes generated using [Sage 7.0](http://www.sagemath.org/). The generation scripts are normally referenced so that the process can be replicated.
+Test-data is sometimes generated using [Sage 7.0](http://www.sagemath.org/). The generation scripts are normally included so that the process can be replicated.
 
 #### Note on optimization, inline assembly
 
-The contracts will not be fully optimized until it's clear how formal verification will work, since that is a requirement for many of these contracts. Assembly might be removed from some functions.
+The contracts will not be fully optimized until it's clear how formal verification will work, since that is a requirement for many of these contracts. Assembly might be removed from some contracts and functions.
 
 ## Bits
 
@@ -238,126 +242,104 @@ Contracts used for various different types of encoding and decoding.
 
 #### Status: Draft
 
-Used to work with RLP encoded data. The data is converted into an `RLPItem` which keeps track of the bytes in memory and has methods for decoding and extracting items from lists.
+Used to parse and decode RLP encoded data. The encoded bytes is converted into an `RLPItem` which keeps track of the bytes in memory, and has methods for decoding and extracting new items from lists.
 
-Encoding to RLP is not yet supported.
+Working with items will never copy any of the raw RLP encoded bytes; only new `RLPItem`s and `Iterator`s. Those are both simple items that takes 2 and 3 words of memory space.
 
-#### RLPItem
+Decoding an item into a reference type (i.e. `bytes` or `string`) will copy the required bytes, so use with care.
 
-##### toRLPItem
-
-Creates an `RLPItem` from RLP-encoded `bytes`.
-
-##### isNull
-
-Check if the `RLPItem` is null (i.e. created from the empty `bytes`)
-
-##### isData
-
-Check if the `RLPItem` is data.
-
-##### isList
-
-Check if the `RLPItem` is a list.
-
-##### toList
-
-Returns an array of `RLPItem`s, one for each sub-item in the list.
-
-##### toData
-
-Decodes an `RLPItem` and returns the data as `bytes`.
-
-##### toUint
-
-Decodes an `RLPItem` and returns the data as a `uint`.
-
-##### toInt
-
-Decodes an `RLPItem` and returns the data as an `int`.
-
-##### toAddress
-
-Decodes an `RLPItem` and returns the data as an `address`.
-
-##### toBytes32
-
-Decodes an `RLPItem` and returns the data as a `bytes32`.
-
-##### toBool
-
-Decodes an `RLPItem` and returns the data as a `bool`.
-
-#### Iterator
-
-A simple forward iterator for getting items from RLP encoded lists.
-
-Iterators are created from `RLPitem`s by calling `RLPItem.iterator()`. The function will throw if the `RLPItem` is not a list.
-
-##### next
-
-Gets the next item. Will throw if called when at the end of the list.
-
-##### hasNext
-
-Check if there are more items in the list.
+Encoding is not (yet) supported.
 
 #### Examples
 
 ```
+bytes memory data; // input
 
-/* data */
+/* data = "0x880102030405060708" */
 
-// This is the RLP encoding of "0x0102030405060708"
-// Bytes can't actually be assigned like this, just for show.
-bytes memory rlpString = "0x880102030405060708";
+var itm = data.toRLPItem(); // Create a new RLP Item
 
-var sItm = rlpString.toRLPItem();
+item.isData(); // true
 
-sItem.isData(); // true
+item.isList(); // false
 
-sItem.isList(); // false
+item.items(); // 0
 
-sItem.items(); // 0
+item.toBytes(); // "0x880102030405060708" - the raw RLP-encoded bytes.
 
-sItem.toData(); // "0x0102030405060708"
+item.toData(); // "0x0102030405060708" - The data.
 
-/* list */
+/* data = "0x11" */
+
+var itm = data.toRLPItem();
+
+uint u = itm.toUint() // 17
+
+address a = itm.toAddress() // 0x0000000000000000000000000000000000000011
+
+/* data = "0x80" */
+
+var itm = data.toRLPItem();
+
+itm.isEmpty(); // true
+
+itm.isData(); // true
+
+/* data = "0x01" */
+
+var itm = data.toRLPItem();
+
+itm.toBool(); // True
 
 // This is the RLP encoding of [[1, 2], 1, [1, 2, 3]]
 // Bytes can't actually be assigned like this, just for show.
-bytes memory rlpList = "0xC8C2010201C3010203";
+/* data = "0xC8C2010201C3010203" */
 
-var item = rlpList.toRLPItem(); // New RLPItem
+var itm = rlpList.toRLPItem();
 
-item.isList(); // true
+itm.isList(); // true
 
-item.items(); // 3
+itm.items(); // 3
 
-item.toList() // RLPItem[] of length 3 (one for each list-item)
+itm.toList(); // RLPItem[] of length 3 (one for each list-item)
 
-/* Iterator */
+// Using iterators.
 
-var subItem = item.iterator().next(); // RLPItem for [1, 2]
+var subItm = itm.iterator().next(); // RLPItem for [1, 2]
 
 var it2 = subItem.iterator();
 
 while(it2.hasNext())
     it2.next().toUint() // 1, 2
 
-/* null */
+it2.next(); // will throw
 
-bytes memory nullBts;
+/* data = "0x" */
 
-var nItem = nullBts.toRLPItem();
+var itm = nullBts.toRLPItem();
 
-nItem.isNull(); // true
+itm.isNull(); // true
 
-nItem.isData(); // false
+itm.isData(); // false
 
-nItem.isList(); // false
+itm.isList(); // false
 
-/* */
+itm.isEmpty() // false
+
+// Strict mode (costs more, but useful when RLP data may be malformed).
+
+/* data = "0x81" */
+
+var itm = data.toRLPItem(true); // will throw
+
+/* data = "0x8101" */
+
+var itm = data.toRLPItem(true); // will throw
+
+/* data = "0xC211 */
+
+var itm = data.toRLPItem(true); // will throw
+
 ```
 
 ### ECCConversion
@@ -374,6 +356,8 @@ Contracts used for cryptographic operations.
 
 Hashing primitives are not implemented, because Solidity already [provide some](http://solidity.readthedocs.io/en/latest/units-and-global-variables.html#mathematical-and-cryptographic-functions).
 
+**Warning: Crypto operations can be very expensive, so should not be done on the public chain. This includes the ECC math functions as well.**
+
 - [Curve](#curve)
 - [ECCMath](#eccmath)
 - [Secp256k1](#secp256k1)
@@ -387,7 +371,7 @@ Hashing primitives are not implemented, because Solidity already [provide some](
 
 Curve is an interface for elliptic curves. The cryptographic properties (e.g. defined over finite fields) of these curves are implied.
 
-The only functions that may be implemented are those that does not involve passing a private key to the contract, meaning functions like 'sign' and 'private-to-public' are not included. There is also no public key recovery function in the interface yet.
+The only functions that may be implemented are those that does not involve passing a private key to the contract, meaning functions like 'sign' and 'private-to-public' are not included. There is also no public key recovery function in the interface yet, because there is a built in function for secp256k1 (and for some other reasons).
 
 The contracts use the mathematical representations of coordinates and points, and is thus key-format agnostic. Contracts that require keys to be encoded in a particular way would manage the encoding/decoding themselves; and delegate the actual curve operations to whatever implementation is used (only `secp256k1` is provided at this point).
 
@@ -398,7 +382,6 @@ Details can be found here:
 [SEC 2: Recommended Elliptic Curve Domain Parameters, Version 2.0](http://www.secg.org/sec2-v2.pdf)
 
 [Lower-s signatures](https://github.com/bitcoin/bips/blob/master/bip-0062.mediawiki#low-s-values-in-signatures) (requirement for homestead signatures).
-
 
 #### onCurve
 
@@ -441,6 +424,10 @@ Uses the euclidean algorithm to find the modular inverse.
 `uint x = expmod(b, e, m)` is used to compute the number `b**e % m`
 
 The function is a Solidity adaptation of the exponentiation formula found in the [Serpent examples](https://github.com/ethereum/serpent/blob/develop/examples/ecc/modexp.se).
+
+#### toZ1
+
+Used internally to transform an arbitrary (Jacobian) point `P = (Px, Py, Pz)` to `P' = (Px', Py', 1)`. `(Px, Py)` is the affine coordinates. The second variety (with 3 parameters) is used in `mul` during the Montgomery inversion.
 
 ### Secp256k1
 
@@ -564,7 +551,7 @@ for i in range(0, 40):
     dbls.append(tohex2(P + P))
 ```
 
-Script for generating a series of random elements in Zp/Z.
+Script for generating a series of random elements in Z/pZ.
 
 ```
 ZZp = Integers(p)
