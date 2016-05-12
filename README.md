@@ -426,7 +426,7 @@ The function is a Solidity adaptation of the exponentiation formula found in the
 
 #### toZ1
 
-Used internally to transform an arbitrary (Jacobian) point `P = (Px, Py, Pz)` to `P' = (Px', Py', 1)`. `(Px, Py)` is the affine coordinates. The second variety (with 3 parameters) is used in `mul` during the Montgomery inversion.
+Used internally to transform an arbitrary (Jacobian) point `P = (Px, Py, Pz)` to `P' = (Px', Py', 1)`. `(Px, Py)` is the affine coordinates. The second variety (with 4 parameters) is used in `mul` during the Montgomery inversion.
 
 ### Secp256k1
 
