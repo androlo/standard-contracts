@@ -292,7 +292,6 @@ var itm = data.toRLPItem();
 itm.toBool(); // True
 
 // This is the RLP encoding of [[1, 2], 1, [1, 2, 3]]
-// Bytes can't actually be assigned like this, just for show.
 /* data = "0xC8C2010201C3010203" */
 
 var itm = rlpList.toRLPItem();
