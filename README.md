@@ -15,7 +15,7 @@ Short descriptions of contracts and methods can be found in this README, as well
 - [Bytes](#bytes)
   - [ByteSlice](#byteslice)
 - [Codec](#codec)
-  - [RLPReader](#rlpreader)
+  - [RLP](#rlp)
   - [ECCConversion](#eccconversion)
 - [Crypto](#crypto)
   - [Curve](#curve)
@@ -229,63 +229,135 @@ s.equal(sEmpt); // true
 
 Contracts used for various different types of encoding and decoding.
 
-- [RLPReader](#rlpreader)
+- [RLP](#rlp)
 - [ECCConversion](#eccconversion)
 
-### RLPReader
+### RLP
 
-#### Version 1.0
+#### Version 2.0
 
-#### Status: Tested
+#### Status: Draft
 
-Used to read RLP encoded data. The data is converted into an `RLPItem` which keeps track of the bytes in memory, marks whether or not it's a list, and also creates indices for each sub-item in the case of a list (which can be converted into new items).
+Used to work with RLP encoded data. The data is converted into an `RLPItem` which keeps track of the bytes in memory and has methods for decoding and extracting items from lists.
 
-There is no generic types in Solidity, which means decoding an RLP encoded list can't be done, but through the `RLPItem` it is still possible to parse the data. There is also a `decode` method for decoding (sub) items that are strings.
+Encoding to RLP is not yet supported.
+
+#### RLPItem
+
+##### toRLPItem
+
+Creates an `RLPItem` from RLP-encoded `bytes`.
+
+##### isNull
+
+Check if the `RLPItem` is null (i.e. created from the empty `bytes`)
+
+##### isData
+
+Check if the `RLPItem` is data.
+
+##### isList
+
+Check if the `RLPItem` is a list.
+
+##### toList
+
+Returns an array of `RLPItem`s, one for each sub-item in the list.
+
+##### toData
+
+Decodes an `RLPItem` and returns the data as `bytes`.
+
+##### toUint
+
+Decodes an `RLPItem` and returns the data as a `uint`.
+
+##### toInt
+
+Decodes an `RLPItem` and returns the data as an `int`.
+
+##### toAddress
+
+Decodes an `RLPItem` and returns the data as an `address`.
+
+##### toBytes32
+
+Decodes an `RLPItem` and returns the data as a `bytes32`.
+
+##### toBool
+
+Decodes an `RLPItem` and returns the data as a `bool`.
+
+#### Iterator
+
+A simple forward iterator for getting items from RLP encoded lists.
+
+Iterators are created from `RLPitem`s by calling `RLPItem.iterator()`. The function will throw if the `RLPItem` is not a list.
+
+##### next
+
+Gets the next item. Will throw if called when at the end of the list.
+
+##### hasNext
+
+Check if there are more items in the list.
 
 #### Examples
 
 ```
+
+/* data */
+
 // This is the RLP encoding of "0x0102030405060708"
 // Bytes can't actually be assigned like this, just for show.
 bytes memory rlpString = "0x880102030405060708";
 
 var sItm = rlpString.toRLPItem();
 
+sItem.isData(); // true
+
 sItem.isList(); // false
 
-sItem.numItems(); // 0
+sItem.items(); // 0
 
-sItem.decode(); // "0x0102030405060708"
+sItem.toData(); // "0x0102030405060708"
+
+/* list */
 
 // This is the RLP encoding of [[1, 2], 1, [1, 2, 3]]
+// Bytes can't actually be assigned like this, just for show.
 bytes memory rlpList = "0xC9C201028101C3010203";
 
-var lItm = rlpList.toRLPItem(); // New RLPItem
+var item = rlpList.toRLPItem(); // New RLPItem
 
-lItem.isList(); // true
+item.isList(); // true
 
-lItem.numItems(); // 3
+item.items(); // 3
 
-var lItm0 = lItem.item(0); // "0xC20102", enc: [1, 2]
+item.toList() // RLPItem[] of length 3 (one for each list-item)
 
-lItem0.item(0).decode(); // "0x01"
+/* Iterator */
 
-lItem0.item(1).decode(); // "0x02"
+var subItem = item.iterator().next(); // RLPItem for [1, 2]
 
+var it2 = subItem.iterator();
 
-var lItm1 = lItem.item(1); // "0x8101", enc: 1
+while(it2.hasNext())
+    it2.next().toUint() // 1, 2
 
-lItm1.decode(); // "0x01"
+/* null */
 
+bytes memory nullBts;
 
-var lItem2 = lItem.item(2); // "0xC3010203", enc: [1, 2, 3]
+var nItem = nullBts.toRLPItem();
 
-lItem2.item(0).decode(); // "0x01"
+nItem.isNull(); // true
 
-lItem2.item(1).decode(); // "0x02"
+nItem.isData(); // false
 
-lItem2.item(2).decode(); // "0x03"
+nItem.isList(); // false
 
+/* */
 ```
 
 ### ECCConversion

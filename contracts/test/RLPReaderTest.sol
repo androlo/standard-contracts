@@ -1,54 +1,94 @@
-import {RLPReader} from "github.com/androlo/standard-contracts/contracts/src/codec/RLPReader.sol";
+import {RLP} from "github.com/androlo/standard-contracts/contracts/src/codec/RLP.sol";
 
 contract RLPReaderTest {
 
-    using RLPReader for RLPReader.RLPItem;
-    using RLPReader for bytes;
+    using RLP for RLP.RLPItem;
+    using RLP for RLP.Iterator;
+    using RLP for bytes;
 
-    function testItem(bytes rlp) constant returns (uint start, uint len, bool isList, uint[] list, uint listLen) {
-        return _dumpRLPItem(rlp.toRLPItem());
+    function testItem(bytes rlp) constant returns (uint memPtr, uint len, bool isList, uint[] list, uint listLen) {
+        var item = rlp.toRLPItem();
+        return _testItem(item);
+    }
+
+    function testItemStrict(bytes rlp) constant returns (uint memPtr, uint len, bool isList, uint[] list, uint listLen) {
+        var item = rlp.toRLPItem(true);
+        return _testItem(item);
+    }
+
+    function testFirst(bytes rlp) constant returns (uint memPtr, uint len, byte first) {
+        var item = rlp.toRLPItem();
+        memPtr = item._unsafe_memPtr;
+        len = item._unsafe_length;
+        uint b0;
+        assembly {
+            b0 := byte(0, mload(memPtr))
+        }
+        first = byte(b0);
     }
 
     function testIsList(bytes rlp) constant returns (bool ret) {
         ret = rlp.toRLPItem().isList();
     }
 
-    function testNumItems(bytes rlp) constant returns (uint) {
-        return rlp.toRLPItem().numItems();
+    function testItems(bytes rlp) constant returns (uint) {
+        return rlp.toRLPItem().items();
     }
 
-    function testSubItem(bytes rlp, uint index) constant returns (uint memPtr, uint length, bool isList, uint[] list, uint listLen) {
-        return _dumpRLPItem(rlp.toRLPItem().item(index));
+    function testSubItem(bytes rlp, uint index) constant returns (uint memPtr, uint len, bool isList, uint[] list, uint listLen) {
+        var it = rlp.toRLPItem().iterator();
+        uint idx;
+        while(it.hasNext() && idx < index) {
+            it.next();
+            idx++;
+        }
+       var si = it.next();
+       return _testItem(si);
     }
 
-    function testDecode(bytes rlp) constant returns (bytes memory bts) {
-        return rlp.toRLPItem().decode();
+    function testToData(bytes rlp) constant returns (bytes memory bts) {
+        bts = rlp.toRLPItem().toData();
     }
 
-    function testCopyToBytes(uint btsPtr, bytes memory tgt, uint btsLen) constant returns (bytes memory btsOut) {
-        RLPReader._copyToBytes(btsPtr, tgt, btsLen);
+    function testToUint(bytes rlp) constant returns (uint) {
+        return rlp.toRLPItem().toUint();
     }
 
-    function testLenLong(uint pos, uint rlpOffset) constant returns (uint len) {
-        return RLPReader._lenLong(pos, rlpOffset);
+    function testToInt(bytes rlp) constant returns (int) {
+        return rlp.toRLPItem().toInt();
     }
 
-    function _dumpRLPItem(RLPReader.RLPItem memory item) internal constant returns (uint start, uint len, bool isList, uint[] list, uint listLen) {
-        start = item._unsafe_memPtr;
+    function testToBytes32(bytes rlp) constant returns (bytes32) {
+        return rlp.toRLPItem().toBytes32();
+    }
+
+    function testToAddress(bytes rlp) constant returns (address) {
+        return rlp.toRLPItem().toAddress();
+    }
+
+    function testToBool(bytes rlp) constant returns (bool) {
+        return rlp.toRLPItem().toBool();
+    }
+
+    function _testItem(RLP.RLPItem item) internal constant returns (uint memPtr, uint len, bool isList, uint[] memory list, uint listLen) {
+        memPtr = item._unsafe_memPtr;
         len = item._unsafe_length;
-        isList = item._unsafe_isList;
+        isList = item.isList();
+
         if (isList) {
-            listLen = item._unsafe_listLength;
+            uint i;
+            listLen = item.items();
             list = new uint[](listLen);
-            uint listStart =  item._unsafe_listPtr;
-            for(uint i = 0; i < listLen; i++) {
-                uint lp;
+            var it = item.iterator();
+            while(it.hasNext() && i < listLen) {
+                var si = it.next();
+                uint ptr;
                 assembly {
-                    lp := mload(add(listStart, mul(i, 0x20)))
+                    ptr := mload(si)
                 }
-                list[i] = lp;
+                list[i] = ptr;
+                i++;
             }
         }
     }
-
 }
