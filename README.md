@@ -240,7 +240,7 @@ Contracts used for various different types of encoding and decoding.
 
 #### Version 2.0
 
-#### Status: Draft
+#### Status: Tested
 
 Used to parse and decode RLP encoded data. The encoded bytes is converted into an `RLPItem` which keeps track of the bytes in memory, and has methods for decoding and extracting new items from lists.
 
