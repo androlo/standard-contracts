@@ -326,7 +326,7 @@ sItem.toData(); // "0x0102030405060708"
 
 // This is the RLP encoding of [[1, 2], 1, [1, 2, 3]]
 // Bytes can't actually be assigned like this, just for show.
-bytes memory rlpList = "0xC9C201028101C3010203";
+bytes memory rlpList = "0xC8C2010201C3010203";
 
 var item = rlpList.toRLPItem(); // New RLPItem
 
