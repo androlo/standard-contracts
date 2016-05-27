@@ -273,15 +273,15 @@ item.toData(); // "0x0102030405060708" - The data.
 
 var itm = data.toRLPItem();
 
-uint u = itm.toUint() // 17
+uint u = itm.toUint(); // 17
 
-address a = itm.toAddress() // 0x0000000000000000000000000000000000000011
+address a = itm.toAddress(); // 0x0000000000000000000000000000000000000011
 
 /* data = "0x80" */
 
 var itm = data.toRLPItem();
 
-itm.isEmpty(); // true
+itm.isEmpty(); // false
 
 itm.isData(); // true
 
