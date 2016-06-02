@@ -440,6 +440,8 @@ Library functions for the `secp256k1` curve. Includes internal versions of the `
 
 The output of all function is in Jacobian coordinates.
 
+NOTE: You may notice weird arrays and other types where it looks as if they shouldn't be needed. That's mainly to work around the stack item limitations and some optimizer issues. This is a problem, and I will replace the code gradually as it becomes possible.
+
 #### add
 
 Point-addition of two points `P` and `Q`. Both input points must be expressed in Jacobian coordinates.
