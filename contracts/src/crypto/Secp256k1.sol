@@ -264,8 +264,8 @@ library Secp256k1 {
                 dwPtr := mload(0x40)
                 mstore(0x40, add(dwPtr, 512)) // Should lower this.
             loop:
-                jumpi(loop_end, not(d))
-                jumpi(even, not(and(d, 1)))
+                jumpi(loop_end, iszero(d))
+                jumpi(even, iszero(and(d, 1)))
                 dm := mod(d, 32)
                 mstore8(add(dwPtr, i), dm) // Don't store as signed - convert when reading.
                 d := add(sub(d, dm), mul(gt(dm, 16), 32))

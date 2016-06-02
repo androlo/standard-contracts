@@ -48,11 +48,11 @@ library ECCMath {
         uint bit = 2 ** 255;
         assembly {
             loop:
-                jumpi(end, not(bit))
-                r := mulmod(mulmod(r, r, m), exp(b, not(not(and(e, bit)))), m)
-                r := mulmod(mulmod(r, r, m), exp(b, not(not(and(e, div(bit, 2))))), m)
-                r := mulmod(mulmod(r, r, m), exp(b, not(not(and(e, div(bit, 4))))), m)
-                r := mulmod(mulmod(r, r, m), exp(b, not(not(and(e, div(bit, 8))))), m)
+                jumpi(end, iszero(bit))
+                r := mulmod(mulmod(r, r, m), exp(b, iszero(iszero(and(e, bit)))), m)
+                r := mulmod(mulmod(r, r, m), exp(b, iszero(iszero(and(e, div(bit, 2))))), m)
+                r := mulmod(mulmod(r, r, m), exp(b, iszero(iszero(and(e, div(bit, 4))))), m)
+                r := mulmod(mulmod(r, r, m), exp(b, iszero(iszero(and(e, div(bit, 8))))), m)
                 bit := div(bit, 16)
                 jump(loop)
             end:

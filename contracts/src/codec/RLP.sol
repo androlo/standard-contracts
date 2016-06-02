@@ -102,7 +102,7 @@ library RLP {
             return false;
         uint memPtr = self._unsafe_memPtr;
         assembly {
-            ret := not(lt(byte(0, mload(memPtr)), 0xC0))
+            ret := iszero(lt(byte(0, mload(memPtr)), 0xC0))
         }
     }
 

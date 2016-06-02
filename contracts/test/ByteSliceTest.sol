@@ -118,7 +118,7 @@ contract ByteSliceTest {
         var s = bts.slice();
         var out = s.toBytes();
         assembly {
-            ret := not(mload(add(out, 0x23)))
+            ret := iszero(mload(add(out, 0x23)))
         }
     }
 
