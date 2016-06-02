@@ -1,1 +1,0 @@
-Contracts compiled with solc version: `0.3.2-9e36bdda/RelWithDebInfo-Emscripten/clang/Interpreter`

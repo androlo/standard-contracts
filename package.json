@@ -1,7 +1,7 @@
 {
   "name": "solidity-stl",
-  "version": "0.1.0",
-  "description": "0.1.0",
+  "version": "0.1.1",
+  "description": "solidity contracts",
   "author": "Andreas Olofsson",
   "license": "MIT",
   "repository": {

@@ -40,7 +40,7 @@ contract BitOpsTest {
 
     function testSetBitFailIndexOOB() constant returns (bool ret) {
         ret = true;
-        uint(0).setBit(255);
+        uint(0).setBit(256);
     }
 
     function testClearBitSuccess() constant returns (bool ret) {
@@ -53,7 +53,7 @@ contract BitOpsTest {
 
     function testClearBitFailIndexOOB() constant returns (bool ret) {
         ret = true;
-        uint(0).clearBit(255);
+        uint(0).clearBit(256);
     }
 
     function testToggleBitSuccess() constant returns (bool ret) {

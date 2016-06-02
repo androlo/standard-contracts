@@ -47,6 +47,8 @@ Generally speaking, contracts with a grade less then `3` should not be used, and
 
 The tests are done over RPC calls from Node.js, using `web3` - the official Ethereum JavaScript API. They require a running development node. Any Ethereum client should work in theory, but the tests has only been run against a `geth` node.
 
+Latest compilation and testing was done using: `0.3.4-7dab8902/Release-Emscripten/clang/Interpreter`
+
 ### Running
 
 To run tests, cd into the project root and type:
