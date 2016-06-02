@@ -3,28 +3,6 @@
  *
  * Slices are objects that allow you to work with arrays without copying them.
  *
- * The methods are designed so as to mimic the behavior of slices in languages
- * like Go and Python:
- *
- *     Function                       In slice notation
- *     'at(slice, i)'                 'slice[i]'
- *     'slice(slice)'              'slice[:]'
- *     'slice(slice, start)'       'slice[start:]'
- *     'slice(slice, start, end)'  'slice[start:end]'
- *
- * There is no shorthand for 'slice[:p]', so one must use 'slice(slice, 0, p)'.
- *
- * Negative slicing positions and array indices are also allowed.
- *
- *     'at(slice, -5)'                'slice[-5] = slice[length - 5:]'
- *     'slice(slice, -3, -5)'      'slice[length - 5: length - 3]'
- *
- * There are separate, optimized functions for when unsigned integers are used.
- *
- * Currently, only bytes and (ascii) strings can be converted to and from a slice.
- * Slices works directly on memory, so converting a variable into a slice will
- * cause all type information to be erased.
- *
  * @author Andreas Olofsson (androlo1980@gmail.com)
  */
 library ByteSlice {
@@ -41,7 +19,7 @@ library ByteSlice {
         assembly {
             let len := mload(self)
             let memPtr := add(self, 0x20)
-            mstore(slice, mul(memPtr, not(not(len))))
+            mstore(slice, mul(memPtr, iszero(iszero(len))))
             mstore(add(slice, 0x20), len)
         }
     }
@@ -168,7 +146,7 @@ library ByteSlice {
             throw;
         assembly {
             len := sub(len, startpos)
-            let newMemPtr := mul(add(mload(self), startpos), not(not(len)))
+            let newMemPtr := mul(add(mload(self), startpos), iszero(iszero(len)))
             mstore(newSlice, newMemPtr)
             mstore(add(newSlice, 0x20), len)
         }
@@ -195,7 +173,7 @@ library ByteSlice {
         }
         assembly {
             len := sub(len, startpos_)
-            let newMemPtr := mul(add(mload(self), startpos_), not(not(len)))
+            let newMemPtr := mul(add(mload(self), startpos_), iszero(iszero(len)))
             mstore(newSlice, newMemPtr)
             mstore(add(newSlice, 0x20), len)
         }
@@ -214,7 +192,7 @@ library ByteSlice {
             throw;
         assembly {
             len := sub(endpos, startpos)
-            let newMemPtr := mul(add(mload(self), startpos), not(not(len)))
+            let newMemPtr := mul(add(mload(self), startpos), iszero(iszero(len)))
             mstore(newSlice, newMemPtr)
             mstore(add(newSlice, 0x20), len)
         }
@@ -257,7 +235,7 @@ library ByteSlice {
             throw;
         assembly {
             len := sub(endpos_, startpos_)
-            let newMemPtr := mul(add(mload(self), startpos_), not(not(len)))
+            let newMemPtr := mul(add(mload(self), startpos_), iszero(iszero(len)))
             mstore(newSlice, newMemPtr)
             mstore(add(newSlice, 0x20), len)
         }
