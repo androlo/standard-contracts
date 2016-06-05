@@ -10,7 +10,7 @@ library Bytes {
     /// @dev Concatenate two 'bytes'
     /// @param self The first 'bytes'
     /// @param bts The second 'bytes'
-    /// @returns A new 'bytes' with length 'self.length + bts.length',
+    /// @return A new 'bytes' with length 'self.length + bts.length',
     /// and elements [self[0], ... , self[self.length - 1], bts[0], ... , bts[bts.length - 1]]
     function concat(bytes memory self, bytes memory bts) internal constant returns (bytes memory newBts) {
         uint totLen = self.length + bts.length;
