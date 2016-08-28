@@ -6,9 +6,9 @@ Contract imports uses the github path, so can be imported into the online compil
 
 Short descriptions of contracts and methods can be found in this README, as well as some examples. More detailed documentation can be found in the contracts themselves.
 
-**Warning: All the code in here is still in development, and should be considered unreliable. Do not deploy any of this code onto a public node and use it in production.
+**Warning: All the code in here is still in development, and should be considered unreliable. Do not deploy any of this code onto a public node and use it in production.**
 
-This is also a personal side project with no deadlines or dev plan.**
+**This is also a personal side project with no deadlines or dev plan.**
 
 ## Table of Content
 
