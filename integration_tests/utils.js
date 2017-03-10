@@ -1,6 +1,4 @@
 const Web3 = require('web3');
-const path = require('path');
-const fs = require('fs-extra');
 
 var web3;
 

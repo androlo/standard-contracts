@@ -4,14 +4,20 @@
   "description": "solidity contracts",
   "author": "Andreas Olofsson",
   "license": "MIT",
+  "scripts": {
+    "test": "mocha integration_tests"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/androlo/standard-contracts.git"
   },
   "devDependencies": {
     "async": "^2.0.0-rc.3",
-    "web3": "^0.15.3",
     "bignumber.js": "^2.3.0",
     "fs-extra": "^0.30.0"
+  },
+  "dependencies": {
+    "mocha": "^3.2.0",
+    "web3": "^0.18.2"
   }
 }
