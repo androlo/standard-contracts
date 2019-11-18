@@ -1,10 +1,9 @@
-pragma solidity ^0.5.12;
 /**
 * @title RLPReader
 *
 * RLPReader is used to read and parse RLP encoded data in memory.
 *
-* @author Andreas Olofsson (androlo1980@gmail.com) from https://github.com/androlo/standard-contracts/blob/master/contracts/src/codec/RLP.sol
+* @author Andreas Olofsson (androlo1980@gmail.com)
 */
 library RLP {
 

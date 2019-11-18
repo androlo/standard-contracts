@@ -1,5 +1,3 @@
-pragma solidity ^0.5.12;
-
 import {RLP} from "github.com/androlo/standard-contracts/contracts/src/codec/RLP.sol";
 
 contract RLPReaderTest {
